@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const { database, console, logger } = require('./utils/index');
 
 const app = express();
 
@@ -12,6 +13,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen({ port: 3000 }, async () => {
     // await Database1.sync();
-    await Database1.authenticate();
+    await database.authenticate();
     console.log('starting');
 });
