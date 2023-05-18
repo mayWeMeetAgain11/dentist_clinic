@@ -7,4 +7,7 @@ const sequelize = new Sequelize('dentest_clinic', 'root', '', {
 });
 
 
-module.exports = sequelize;
+module.exports = {
+	sequelize,
+	Sequelize
+};

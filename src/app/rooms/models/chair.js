@@ -1,31 +1,29 @@
-'use strict';
-const {Model} = require('sequelize');
+
+const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Chair extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+    class ChairModels extends Model {
         static associate(models) {
-
+            this.hasMany(models.AppointmentReservationModels, {
+                foreignKey: 'chair_id',
+                as: 'appointment_reservations',
+            });
+            this.belongsTo(models.RoomModels, {
+                foreignKey: 'room_id',
+                as: 'room',
+            });
         }
     }
-    Chair.init({
-        chair_id: {
-            allowNull: false,
-            autoIncrement: true,
-            primaryKey: true,
-            type: DataTypes.INTEGER
-        },
+    ChairModels.init({
         number: {
             type: DataTypes.INTEGER,
             allowNull: false
         }
     }, {
         sequelize,
-        modelName: 'Chair',
+        modelName: 'ChairModels',
+        tableName: 'chairs',
+        underscored: true,
     });
-    return Chair;
+    return ChairModels;
 };

@@ -1,30 +1,37 @@
-'use strict';
-const {
-Model
-} = require('sequelize');
+
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-class DoctorMaterialOrderModels extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-    }
-}
-DoctorMaterialOrderModels.init({
-    quantity: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-            notNull: true,
-            isInt: true,
+    class DoctorMaterialOrderModels extends Model {
+        static associate(models) {
+            this.belongsTo(models.UserModels, {
+                foreignKey: 'doctor_id',
+                as: 'doctor',
+            });
+            this.belongsTo(models.StoreModels, {
+                foreignKey: 'store_id',
+                as: 'store',
+            });
+            this.belongsTo(models.AppointmentReservationModels, {
+                foreignKey: 'appointment_reservation_id',
+                as: 'appointment_reservation',
+            });
         }
-    },
+    }
+    DoctorMaterialOrderModels.init({
+        quantity: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                notNull: true,
+                isInt: true,
+            }
+        },
     }, {
-    sequelize,
-    modelName: 'DoctorMaterialOrderModels',
-    underscored: true
+        sequelize,
+        modelName: 'DoctorMaterialOrderModels',
+        tableName: 'doctor_material_orders',
+        underscored: true
     });
     return DoctorMaterialOrderModels;
 };

@@ -1,16 +1,25 @@
-const { Sequelize, DataTypes, Model } = require("sequelize");
-const sequelize = require("../../../../utils/database/config");
 
+const { Model } = require('sequelize');
 
-class Tax extends Model { }
-Tax.init({
-    percent: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-    },
-}, {
-    tableName: 'taxes',
-    sequelize
-});
-
-module.exports = Tax;
+module.exports = (sequelize, DataTypes) => {
+    class TaxModels extends Model {
+        static associate(models) {
+            this.hasMany(models.BillModels, {
+                foreignKey: 'tax_id',
+                as: 'bills',
+            });
+        }
+    }
+    TaxModels.init({
+        percent: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+        },
+    }, {
+        sequelize,
+        modelName: 'TaxModels',
+        tableName: 'taxs',
+        underscored: true,
+    });
+    return TaxModels;
+};

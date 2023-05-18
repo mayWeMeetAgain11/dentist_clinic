@@ -1,36 +1,35 @@
-'use strict';
-const {
-Model
-} = require('sequelize');
+
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
-class DoctorAccommodationModels extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-    }
-}
-DoctorAccommodationModels.init({
-    end_date: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                args: true,
-                msg: 'Please provide a valid date before creating aDoctor'
-            },
+    class DoctorAccommodationModels extends Model {
+        static associate(models) {
+            this.belongsTo(models.UserModels, {
+                foreignKey: 'doctor_id',
+                as: 'doctor',
+            });
         }
-    },
-    document: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+    }
+    DoctorAccommodationModels.init({
+        end_date: {
+            type: DataTypes.DATE,
+            allowNull: false,
+            validate: {
+                notEmpty: {
+                    args: true,
+                    msg: 'Please provide a valid date before creating aDoctor'
+                },
+            }
+        },
+        document: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
     }, {
-    sequelize,
-    modelName: 'DoctorAccommodationModels',
-    underscored: true
+        sequelize,
+        modelName: 'DoctorAccommodationModels',
+        tableName: 'doctor_accommodations',
+        underscored: true
     });
     return DoctorAccommodationModels;
 };

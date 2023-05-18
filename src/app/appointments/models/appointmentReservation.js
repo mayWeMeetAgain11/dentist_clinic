@@ -1,38 +1,38 @@
-'use strict';
+
 const {Model} = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class AppointmentReservation extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+    class AppointmentReservationModels extends Model {
         static associate(models) {
-
+            this.belongsTo(models.AppointmentModels, {
+                foreignKey: 'appointment_id',
+                as: 'appointment',
+            });
+            this.belongsTo(models.ChairModels, {
+                foreignKey: 'chair_id',
+                as: 'chair',
+            });
+            this.hasMany(models.DoctorMaterialOrderModels, {
+                foreignKey: 'appointment_reservation_id',
+                as: 'doctor_material_orders',
+            });
         }
     }
-    AppointmentReservation.init({
-        appointment_reservation_id: {
-            allowNull: false,
-            autoIncrement: true,
-            primaryKey: true,
-            type: DataTypes.INTEGER
-        },
+    AppointmentReservationModels.init({
         cost: {
             type: DataTypes.INTEGER,
             allowNull: true
         },
         start: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             allowNull: false,
         },
         end: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             allowNull: true,
         },
         done: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             allowNull: true,
         },
         comment: {
@@ -41,7 +41,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         sequelize,
-        modelName: 'AppointmentReservation',
+        modelName: 'AppointmentReservationModels',
+        tableName: 'appointment_reservations',
+        underscored: true,
     });
-    return AppointmentReservation;
+    return AppointmentReservationModels;
 };
