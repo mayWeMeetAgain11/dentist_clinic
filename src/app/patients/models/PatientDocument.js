@@ -2,7 +2,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class PatientDocumentModels extends Model {
+    class PatientDocumentModel extends Model {
         static associate(models) {
             this.belongsTo(models.PatientModel, {
                 foreignKey: 'patient_id',
@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
             });
         }
     }
-    PatientDocumentModels.init({
+    PatientDocumentModel.init({
         document: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -24,10 +24,10 @@ module.exports = (sequelize, DataTypes) => {
         }
     }, {
         sequelize,
-        modelName: 'PatientDocumentModels',
+        modelName: 'PatientDocumentModel',
         tableName: 'patient_documents',
         underscored: true,
     },
     );
-    return PatientDocumentModels;
+    return PatientDocumentModel;
 };

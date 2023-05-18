@@ -2,15 +2,15 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class DoctorAccommodationModels extends Model {
+    class DoctorAccommodationModel extends Model {
         static associate(models) {
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'doctor_id',
                 as: 'doctor',
             });
         }
     }
-    DoctorAccommodationModels.init({
+    DoctorAccommodationModel.init({
         end_date: {
             type: DataTypes.DATE,
             allowNull: false,
@@ -27,9 +27,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         sequelize,
-        modelName: 'DoctorAccommodationModels',
+        modelName: 'DoctorAccommodationModel',
         tableName: 'doctor_accommodations',
         underscored: true
     });
-    return DoctorAccommodationModels;
+    return DoctorAccommodationModel;
 };

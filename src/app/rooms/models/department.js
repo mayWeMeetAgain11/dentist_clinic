@@ -2,28 +2,28 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class DepartmentModels extends Model {
+    class DepartmentModel extends Model {
         static associate(models) {
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'manager_id',
                 as: 'manager',
             });
-            this.hasMany(models.RoomModels, {
+            this.hasMany(models.RoomModel, {
                 foreignKey: 'department_id',
                 as: 'rooms',
             });
         }
     }
-    DepartmentModels.init({
+    DepartmentModel.init({
         name: {
             type: DataTypes.STRING,
             allowNull: false
         }
     }, {
         sequelize,
-        modelName: 'DepartmentModels',
+        modelName: 'DepartmentModel',
         tableName: 'departments',
         underscored: true,
     });
-    return DepartmentModels;
+    return DepartmentModel;
 };
