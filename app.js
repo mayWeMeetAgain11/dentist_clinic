@@ -9,10 +9,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/patient',require('./src/app/patients/router'));
 
 
 app.listen({ port: 3000 }, async () => {
-    await database.sync();
+   await database.sync({alter:true});
     // await database.authenticate();
     console.log('starting');
 });

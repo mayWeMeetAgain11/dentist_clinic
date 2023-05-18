@@ -1,4 +1,4 @@
-const PatientModel = require('./models/Patient');
+const { PatientModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 
 
@@ -106,31 +106,31 @@ class Patient {
     }
 
     static async delete(id) {
-		try {
-			const result = await PatientModel.destroy({
-				where: {
-					id: id,
-				},
-			});
-			if (result == 1) {
-				return {
-					data: 'deleted',
-					code: httpStatus.OK,
-				};
-			} else {
-				return {
-					data: 'something wrong happened',
-					code: httpStatus.BAD_REQUEST,
-				};
-			}
-		} catch (error) {
-			console.error(error.message);
-			return {
-				data: error.message,
-				code: httpStatus.BAD_REQUEST,
-			};
-		}
-	}
+        try {
+            const result = await PatientModel.destroy({
+                where: {
+                    id: id,
+                },
+            });
+            if (result == 1) {
+                return {
+                    data: 'deleted',
+                    code: httpStatus.OK,
+                };
+            } else {
+                return {
+                    data: 'something wrong happened',
+                    code: httpStatus.BAD_REQUEST,
+                };
+            }
+        } catch (error) {
+            console.error(error.message);
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
 
 
 
