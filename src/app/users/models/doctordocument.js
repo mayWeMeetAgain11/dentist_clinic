@@ -2,15 +2,15 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class DoctorDocumentModels extends Model {
+    class DoctorDocumentModel extends Model {
         static associate(models) {
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'doctor_id',
                 as: 'doctor',
             });
         }
     }
-    DoctorDocumentModels.init({
+    DoctorDocumentModel.init({
         comment: {
             type: DataTypes.STRING,
             allowNull: true,
@@ -21,9 +21,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         sequelize,
-        modelName: 'DoctorDocumentModels',
+        modelName: 'DoctorDocumentModel',
         tableName: 'doctor_documents',
         underscored: true
     });
-    return DoctorDocumentModels;
+    return DoctorDocumentModel;
 };

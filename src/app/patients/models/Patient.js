@@ -3,19 +3,19 @@ const { gender } = require('./enum.json');
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class PatientModels extends Model {
+    class PatientModel extends Model {
         static associate(models) {
-            this.hasMany(models.AppointmentModels, {
+            this.hasMany(models.AppointmentModel, {
                 foreignKey: 'patient_id',
                 as: 'appointments',
             });
-            this.hasMany(models.PatientDocumentModels, {
+            this.hasMany(models.PatientDocumentModel, {
                 foreignKey: 'patient_id',
                 as: 'patient_documents',
             });
         }
     }
-    PatientModels.init({
+    PatientModel.init({
         first_name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -108,10 +108,10 @@ module.exports = (sequelize, DataTypes) => {
 
     }, {
         sequelize,
-        modelName: 'PatientModels',
+        modelName: 'PatientModel',
         tableName: 'patients',
         underscored: true,
     },
     );
-    return PatientModels;
+    return PatientModel;
 };

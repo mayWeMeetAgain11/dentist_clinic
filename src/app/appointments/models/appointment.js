@@ -2,31 +2,31 @@
 const {Model} = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class AppointmentModels extends Model {
+    class AppointmentModel extends Model {
         static associate(models) {
-            this.belongsTo(models.PatientModels, {
+            this.belongsTo(models.PatientModel, {
                 foreignKey: 'patient_id',
                 as: 'patient',
             });
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'employee_id',
                 as: 'employee',
             });
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'doctor_id',
                 as: 'doctor',
             });
-            this.hasMany(models.AppointmentReservationModels, {
+            this.hasMany(models.AppointmentReservationModel, {
                 foreignKey: 'appointment_id',
                 as: 'appointment_reservations',
             });
-            this.hasMany(models.BillModels, {
+            this.hasMany(models.BillModel, {
                 foreignKey: 'appointment_id',
                 as: 'bills',
             });
         }
     }
-    AppointmentModels.init({
+    AppointmentModel.init({
         title: {
             type: DataTypes.STRING,
             allowNull: false
@@ -38,9 +38,9 @@ module.exports = (sequelize, DataTypes) => {
         }
     }, {
         sequelize,
-        modelName: 'AppointmentModels',
+        modelName: 'AppointmentModel',
         tableName: 'appointments',
         underscored: true
     });
-    return AppointmentModels;
+    return AppointmentModel;
 };

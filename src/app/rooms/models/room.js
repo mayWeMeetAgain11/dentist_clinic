@@ -2,28 +2,28 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class RoomModels extends Model {
+    class RoomModel extends Model {
         static associate(models) {
-            this.belongsTo(models.DepartmentModels, {
+            this.belongsTo(models.DepartmentModel, {
                 foreignKey: 'department_id',
                 as: 'department',
             });
-            this.hasMany(models.ChairModels, {
+            this.hasMany(models.ChairModel, {
                 foreignKey: 'room_id',
                 as: 'chairs',
             });
         }
     }
-    RoomModels.init({
+    RoomModel.init({
         number: {
             type: DataTypes.INTEGER,
             allowNull: false
         }
     }, {
         sequelize,
-        modelName: 'RoomModels',
+        modelName: 'RoomModel',
         tableName: 'rooms',
         underscored: true,
     });
-    return RoomModels;
+    return RoomModel;
 };

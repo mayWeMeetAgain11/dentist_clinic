@@ -1,32 +1,32 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class BillModels extends Model {
+    class BillModel extends Model {
         static associate(models) {
-            this.belongsTo(models.AppointmentModels, {
+            this.belongsTo(models.AppointmentModel, {
                 foreignKey: 'appointment_id',
                 as: 'appointment',
             });
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'employee_id',
                 as: 'employee',
             });
-            this.belongsTo(models.TaxModels, {
+            this.belongsTo(models.TaxModel, {
                 foreignKey: 'tax_id',
                 as: 'tax',
             });
         }
     }
-    BillModels.init({
+    BillModel.init({
         payment: {
             type: DataTypes.DOUBLE,
             allowNull: false,
         },
     }, {
         sequelize,
-        modelName: 'BillModels',
+        modelName: 'BillModel',
         tableName: 'bills',
         underscored: true,
     });
-    return BillModels;
+    return BillModel;
 };

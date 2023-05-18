@@ -1,8 +1,6 @@
 const { httpStatus, console } = require('../../../utils/index');
+const {ChairModel, DepartmentModel, RoomModel, AppointmentReservationModel} = require('./models');
 
-const Chair = require('./models/chair');
-const Department = require('./models/department');
-const Room = require('.models/room');
 
 class Chair {
 	constructor(data) {
@@ -11,7 +9,7 @@ class Chair {
 
 	async add() {
 		try {
-			const result = await Chair.create(this);
+			const result = await ChairModel.create(this);
 			return { data: result, code: httpStatus.CREATED };
 		} catch (error) {
 			console.error(error);
@@ -24,7 +22,7 @@ class Chair {
 
 	async update(id) {
 		try {
-			const result = await Chair.update(this, {
+			const result = await ChairModel.update(this, {
 				where: {
 					id: id,
 				},
@@ -51,13 +49,34 @@ class Chair {
 
 	static async delete(id) {
 		try {
-            const chairReservation = await Chair.findAll({});
-			const result = await EnrollmentModel.destroy({
+            const chairWithFutureReservation = await ChairModel.findOne({
+                where: {
+                    chair_id: id,
+                },
+                include: {
+                    model: AppointmentReservationModel
+                }
+            });
+            if (chairWithFutureReservation) {
+                return {
+                    data: chairReservation,
+                    code: httpStatus.Multiple_Choices
+                };
+            }
+			const removedChair = await ChairModel.destroy({
 				where: {
 					id: id,
 				},
 			});
-			if (result == 1) {
+            const result = await ChairModel.findOne({
+                where: {
+                    chair_id: id,
+                },
+                include: {
+                    model: AppointmentReservationModel
+                }
+            });
+			if (result[0] == 1) {
 				return {
 					data: 'deleted',
 					code: httpStatus.DELETED,
@@ -68,6 +87,22 @@ class Chair {
 					code: httpStatus.BAD_REQUEST,
 				};
 			}
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+    async getAll() {
+		try {
+			const result = await ChairModel.findAll();
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
 		} catch (error) {
 			console.error(error.message);
 			return {

@@ -2,19 +2,19 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class StoreModels extends Model {
+    class StoreModel extends Model {
         static associate(models) {
-            this.belongsTo(models.CategoryModels, {
+            this.belongsTo(models.CategoryModel, {
                 foreignKey: 'category_id',
                 as: 'category',
             });
-            this.hasMany(models.DoctorMaterialOrderModels, {
+            this.hasMany(models.DoctorMaterialOrderModel, {
                 foreignKey: 'store_id',
                 as: 'doctor_material_orders',
             });
         }
     }
-    StoreModels.init({
+    StoreModel.init({
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -36,10 +36,10 @@ module.exports = (sequelize, DataTypes) => {
 
     }, {
         sequelize,
-        modelName: 'StoreModels',
+        modelName: 'StoreModel',
         tableName: 'store',
         underscored: true,
     },
     );
-    return StoreModels;
+    return StoreModel;
 };

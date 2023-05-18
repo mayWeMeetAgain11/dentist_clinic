@@ -3,6 +3,7 @@ module.exports = {
 	CREATED: 201, //                     * Create new entity
 	UPDATED: 200, //                     * PUT/PATCH Requests
 	DELETED: 204, //                     * DELETE requests
+	Multiple_Choices: 300, //			 * The request has more than one possible response
 	BAD_REQUEST: 400, //                 * A bad request
 	UNAUTHORIZED: 401, //                *
 	FORBIDDEN: 403, //                   *

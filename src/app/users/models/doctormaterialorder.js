@@ -2,23 +2,23 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class DoctorMaterialOrderModels extends Model {
+    class DoctorMaterialOrderModel extends Model {
         static associate(models) {
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'doctor_id',
                 as: 'doctor',
             });
-            this.belongsTo(models.StoreModels, {
+            this.belongsTo(models.StoreModel, {
                 foreignKey: 'store_id',
                 as: 'store',
             });
-            this.belongsTo(models.AppointmentReservationModels, {
+            this.belongsTo(models.AppointmentReservationModel, {
                 foreignKey: 'appointment_reservation_id',
                 as: 'appointment_reservation',
             });
         }
     }
-    DoctorMaterialOrderModels.init({
+    DoctorMaterialOrderModel.init({
         quantity: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -29,9 +29,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         sequelize,
-        modelName: 'DoctorMaterialOrderModels',
+        modelName: 'DoctorMaterialOrderModel',
         tableName: 'doctor_material_orders',
         underscored: true
     });
-    return DoctorMaterialOrderModels;
+    return DoctorMaterialOrderModel;
 };

@@ -2,24 +2,24 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class TaxModels extends Model {
+    class TaxModel extends Model {
         static associate(models) {
-            this.hasMany(models.BillModels, {
+            this.hasMany(models.BillModel, {
                 foreignKey: 'tax_id',
                 as: 'bills',
             });
         }
     }
-    TaxModels.init({
+    TaxModel.init({
         percent: {
             type: DataTypes.DOUBLE,
             allowNull: false,
         },
     }, {
         sequelize,
-        modelName: 'TaxModels',
+        modelName: 'TaxModel',
         tableName: 'taxs',
         underscored: true,
     });
-    return TaxModels;
+    return TaxModel;
 };

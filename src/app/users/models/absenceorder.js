@@ -2,15 +2,15 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class AbsenceOrderModels extends Model {
+    class AbsenceOrderModel extends Model {
         static associate(models) {
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'user_id',
                 as: 'user',
             });
         }
     }
-    AbsenceOrderModels.init({
+    AbsenceOrderModel.init({
         accepted: {
             type: DataTypes.BOOLEAN,
             allowNull: true,
@@ -36,9 +36,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         sequelize,
-        modelName: 'AbsenceOrderModels',
+        modelName: 'AbsenceOrderModel',
         tableName: 'absence_orders',
         underscored: true
     });
-    return AbsenceOrderModels;
+    return AbsenceOrderModel;
 };

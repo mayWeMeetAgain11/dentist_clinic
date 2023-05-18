@@ -2,15 +2,15 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class WorkHourModels extends Model {
+    class WorkHourModel extends Model {
         static associate(models) {
-            this.belongsTo(models.UserModels, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: 'user_id',
                 as: 'user',
             });
         }
     }
-    WorkHourModels.init({
+    WorkHourModel.init({
         day: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -43,9 +43,9 @@ module.exports = (sequelize, DataTypes) => {
         },
     }, {
         sequelize,
-        modelName: 'WorkHourModels',
+        modelName: 'WorkHourModel',
         tableName: 'work_hours',
         underscored: true
     });
-    return WorkHourModels;
+    return WorkHourModel;
 };
