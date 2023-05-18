@@ -1,30 +1,26 @@
-const { Sequelize, DataTypes, Model } = require("sequelize");
-const sequelize = require("../../../../utils/database/config");
-const {gender} = require('./enum.json');
 
-class PatientDocument extends Model { }
-PatientDocument.init({
-    patient_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+const { Model } = require('sequelize');
+
+module.exports = (sequelize, DataTypes) => {
+    class PatientDocumentModels extends Model { }
+    PatientDocumentModels.init({
+        document: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        comment: {
+            type: DataTypes.TEXT,
+        },
+        archived: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        }
+    }, {
+        sequelize,
+        modelName: 'PatientDocumentModels',
+        tableName: 'patient_documents',
+        underscored: true,
     },
-    document: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    comment: {
-        type: DataTypes.TEXT,
-    },
-    archived : {
-        type: DataTypes.BOOLEAN,
-        defaultValue : false,
-
-    }
-
-}, {
-    tableName: 'patient_document',
-    sequelize
-},
-);
-
-module.exports = PatientDocument;
+    );
+    return PatientDocumentModels;
+};

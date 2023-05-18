@@ -1,28 +1,17 @@
-const { Sequelize, DataTypes, Model } = require("sequelize");
-const sequelize = require("../../../../utils/database/config");
+const { Model } = require('sequelize');
 
-
-class Bill extends Model { }
-Bill.init({
-    appointment_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    employee_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    payment: {
-        type: DataTypes.DOUBLE,
-        allowNull: false,
-    },
-    tax_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-}, {
-    tableName: 'bills',
-    sequelize
-});
-
-module.exports = Bill;
+module.exports = (sequelize, DataTypes) => {
+    class BillModels extends Model { }
+    BillModels.init({
+        payment: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+        },
+    }, {
+        sequelize,
+        modelName: 'BillModels',
+        tableName: 'bills',
+        underscored: true,
+    });
+    return BillModels;
+};

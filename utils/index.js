@@ -20,7 +20,8 @@ console.error = function () {
 
 module.exports = {
 	httpStatus: require('./constants/httpStatus'),
-	database: require('./database/config'),
+	database: require('./database/config').sequelize,
+	Sequelize: require('./database/config').Sequelize,
 	console: require('./logger/console'),
 	logger: require('./logger/httpLogger'),
 };
