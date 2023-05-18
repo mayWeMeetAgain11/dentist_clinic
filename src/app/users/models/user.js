@@ -6,6 +6,42 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class UserModels extends Model {
         static associate(models) {
+            this.hasMany(models.AppointmentModels, {
+                foreignKey: 'employee_id',
+                as: 'employee_appointments',
+            });
+            this.hasMany(models.AppointmentModels, {
+                foreignKey: 'doctor_id',
+                as: 'doctor_appointments',
+            });
+            this.hasMany(models.BillModels, {
+                foreignKey: 'employee_id',
+                as: 'bills',
+            });
+            this.hasMany(models.DepartmentModels, {
+                foreignKey: 'manager_id',
+                as: 'departments',
+            });
+            this.hasMany(models.AbsenceOrderModels, {
+                foreignKey: 'user_id',
+                as: 'absence_orders',
+            });
+            this.hasMany(models.DoctorDocumentModels, {
+                foreignKey: 'doctor_id',
+                as: 'doctor_documents',
+            });
+            this.hasMany(models.DoctorAccommodationModels, {
+                foreignKey: 'doctor_id',
+                as: 'doctor_accommodations',
+            });
+            this.hasMany(models.WorkHourModels, {
+                foreignKey: 'user_id',
+                as: 'work_hours',
+            });
+            this.hasMany(models.DoctorMaterialOrderModels, {
+                foreignKey: 'doctor_id',
+                as: 'doctor_material_orders',
+            });
         }
     }
     UserModels.init({

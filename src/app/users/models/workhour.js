@@ -4,6 +4,10 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class WorkHourModels extends Model {
         static associate(models) {
+            this.belongsTo(models.UserModels, {
+                foreignKey: 'user_id',
+                as: 'user',
+            });
         }
     }
     WorkHourModels.init({

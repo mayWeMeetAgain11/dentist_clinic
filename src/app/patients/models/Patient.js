@@ -3,7 +3,18 @@ const { gender } = require('./enum.json');
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class PatientModels extends Model { }
+    class PatientModels extends Model {
+        static associate(models) {
+            this.hasMany(models.AppointmentModels, {
+                foreignKey: 'patient_id',
+                as: 'appointments',
+            });
+            this.hasMany(models.PatientDocumentModels, {
+                foreignKey: 'patient_id',
+                as: 'patient_documents',
+            });
+        }
+    }
     PatientModels.init({
         first_name: {
             type: DataTypes.STRING,
@@ -47,6 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         phone: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: true,
             validate: {
                 notEmpty: {
                     args: true,
