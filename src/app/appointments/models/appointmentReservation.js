@@ -9,7 +9,10 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'appointment',
             });
             this.belongsTo(models.ChairModel, {
-                foreignKey: 'chair_id',
+                foreignKey: {
+                    name: 'chair_id',
+                    allowNull: false,
+                },
                 as: 'chair',
             });
             this.hasMany(models.DoctorMaterialOrderModel, {
@@ -39,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true,
         },
-    }, {
+    },{
         sequelize,
         modelName: 'AppointmentReservationModel',
         tableName: 'appointment_reservations',
