@@ -1,5 +1,5 @@
 
-const { gender } = require('../../patients/models/enum.json');
+const { gender , type} = require('../../patients/models/enum.json');
 
 const { Model } = require('sequelize');
 
@@ -220,7 +220,8 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: '0'
         },
         type: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM,
+            values: type,
             allowNull: false,
         },
     }, {

@@ -11,6 +11,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/patient',require('./src/app/patients/router'));
 
+app.use('/user',require('./src/app/users/router'));
+
 
 app.listen({ port: 3000 }, async () => {
    await database.sync({alter:true});
