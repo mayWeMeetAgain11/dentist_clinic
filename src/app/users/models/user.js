@@ -1,12 +1,22 @@
 
 const { gender , type} = require('../../patients/models/enum.json');
 
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
+
 const { Model } = require('sequelize');
 
 const hash = require('../../../../utils/hashPassword/hash');
+const { JsonWebTokenError } = require('jsonwebtoken');
 
 module.exports = (sequelize, DataTypes) => {
     class UserModel extends Model {
+       
+        generateToken(){
+            const token = jwt.sign({id: this.id, type : this.type}, process.env.SECRET_KEY , {expiresIn: '24h'});
+            return token;
+        }
         static associate(models) {
             this.hasMany(models.AppointmentModel, {
                 foreignKey: 'employee_id',
