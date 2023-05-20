@@ -1,10 +1,22 @@
 
-const { gender } = require('../../patients/models/enum.json');
+const { gender , type} = require('../../patients/models/enum.json');
+
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
 
 const { Model } = require('sequelize');
 
+const hash = require('../../../../utils/hashPassword/hash');
+const { JsonWebTokenError } = require('jsonwebtoken');
+
 module.exports = (sequelize, DataTypes) => {
     class UserModel extends Model {
+       
+        generateToken(){
+            const token = jwt.sign({id: this.id, type : this.type}, process.env.SECRET_KEY , {expiresIn: '24h'});
+            return token;
+        }
         static associate(models) {
             this.hasMany(models.AppointmentModel, {
                 foreignKey: 'employee_id',
@@ -117,6 +129,14 @@ module.exports = (sequelize, DataTypes) => {
                 //     }
                 // },
             },
+            get(){
+                const value = this.getDataValue('password');
+                return hash.decrypt(value);
+            },
+            set(value){
+                
+                this.setDataValue('password', hash.encrypt(value));
+            }
         },
         phone: {
             type: DataTypes.STRING,
@@ -220,7 +240,8 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: '0'
         },
         type: {
-            type: DataTypes.STRING,
+            type: DataTypes.ENUM,
+            values: type,
             allowNull: false,
         },
     }, {

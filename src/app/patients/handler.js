@@ -1,4 +1,4 @@
-const Patient = require('./service');
+const {Patient , PatientDocument} = require('./service');
 
 
 module.exports = {
@@ -38,6 +38,44 @@ module.exports = {
     destroy: async (req, res) => {
         const id = req.params.id;
         const result = await  Patient.delete(id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+    addDocument : async (req,res)=>{
+
+        const data = req.body;
+
+        const result = await new PatientDocument(data).addDocument();
+        res.status(result.code).send({
+            data: result.data,
+        });
+
+    },
+
+    getDocuments : async (req,res)=>{
+
+        const patient_id = req.params.id;
+
+        const result = await PatientDocument.getPatientDocuments(patient_id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+
+    },
+
+    updateDocument: async (req, res) => {
+        const id = req.params.id;
+        const data = req.body;
+        const result = await new PatientDocument(data).updateDocument(id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    deleteDocument: async (req, res) => {
+        const id = req.params.id;
+        const result = await  PatientDocument.deleteDocument(id);
         res.status(result.code).send({
             data: result.data,
         });

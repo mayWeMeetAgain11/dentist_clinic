@@ -1,3 +1,4 @@
 {
-	"gender": ["Male", "Female"]
+	"gender": ["Male", "Female"],
+	"type": ["Maneger", "Employee", "Doctor"]
 }

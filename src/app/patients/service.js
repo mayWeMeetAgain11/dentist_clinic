@@ -1,4 +1,4 @@
-const { PatientModel } = require('../../app');
+const { PatientModel, PatientDocumentModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 
 
@@ -133,12 +133,127 @@ class Patient {
     }
 
 
+}
+
+class PatientDocument {
+
+    constructor(data) {
+        this.document = data.document;
+        this.comment = data.comment;
+        this.archived = data.archived;
+        this.patient_id = data.patient_id;
+    }
 
 
+    async addDocument() {
+
+        try {
+
+            const result = await PatientDocumentModel.create(this);
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
 
 
+        } catch (error) {
+            console.error(error.message);
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
+    static async getPatientDocuments(patient_id) {
+
+        try {
+
+
+            const result = await PatientModel.findByPk(patient_id, {
+                include: [{
+                    model: PatientDocumentModel,
+                    as: 'patient_documents',
+
+                }],
+
+
+            });
+            return {
+                data: result.patient_documents,
+                code: httpStatus.OK,
+            };
+
+
+        } catch (error) {
+            console.error(error.message);
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
+
+    async updateDocument(id) {
+        try {
+            const result = await PatientDocumentModel.update(
+                this,
+                {
+                    where: {
+                        id: id,
+                    },
+                }
+            );
+            if (result[0] == 1) {
+                return {
+                    data: 'updated',
+                    code: httpStatus.UPDATED,
+                };
+            } else {
+                return {
+                    data: 'something wrong happene',
+                    code: httpStatus.BAD_REQUEST,
+                };
+            }
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+    static async deleteDocument(id) {
+        try {
+            const result = await PatientDocumentModel.destroy({
+                where: {
+                    id: id,
+                },
+            });
+            if (result == 1) {
+                return {
+                    data: 'deleted',
+                    code: httpStatus.OK,
+                };
+            } else {
+                return {
+                    data: 'something wrong happened',
+                    code: httpStatus.BAD_REQUEST,
+                };
+            }
+        } catch (error) {
+            console.error(error.message);
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
 
 
 }
 
-module.exports = Patient;
+module.exports = { Patient, PatientDocument };
