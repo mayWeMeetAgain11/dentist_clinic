@@ -3,6 +3,8 @@ const { gender , type} = require('../../patients/models/enum.json');
 
 const { Model } = require('sequelize');
 
+const hash = require('../../../../utils/hashPassword/hash');
+
 module.exports = (sequelize, DataTypes) => {
     class UserModel extends Model {
         static associate(models) {
@@ -117,6 +119,14 @@ module.exports = (sequelize, DataTypes) => {
                 //     }
                 // },
             },
+            get(){
+                const value = this.getDataValue('password');
+                return hash.decrypt(value);
+            },
+            set(value){
+                
+                this.setDataValue('password', hash.encrypt(value));
+            }
         },
         phone: {
             type: DataTypes.STRING,
