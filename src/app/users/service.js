@@ -3,6 +3,8 @@ const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require('sequelize');
 
 
+
+
 class User {
 
     constructor(data) {
@@ -65,7 +67,7 @@ class User {
     static async getOneUser(id) {
 
         try {
-
+            
             const result = await UserModel.findByPk(id);
             if (result === null) {
                             return {
