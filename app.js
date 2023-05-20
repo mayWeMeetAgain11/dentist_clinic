@@ -16,12 +16,7 @@ app.use('/user',require('./src/app/users/router'));
 
 
 app.listen({ port: 3000 }, async () => {
-<<<<<<< HEAD
     // await database.sync({alter:true});
     await database.authenticate();
-=======
-    await database.sync({alter:true});
-    //await database.authenticate();
->>>>>>> fa1ea9c66e7c96e458ce0ea55cc4f64a319c7b96
     console.log('starting');
 });
