@@ -69,6 +69,8 @@ class User {
         try {
             
             const result = await UserModel.findByPk(id);
+            // token = result.generateToken();
+            // console.log(token);
             if (result === null) {
                             return {
                                 data: "NOT FOUND",
@@ -147,13 +149,48 @@ class User {
         }
     }
 
-
-
-
-
-
-
-
+   static async login(data)  {
+        console.log(data);
+        try {
+            const result = await UserModel.findOne(
+                {
+                  where: { 
+                    email: data.email
+                          }
+            }
+            );
+         // console.log(result);
+            if (result === null){
+                return {
+                    data: 'there is no user with this email',
+                    code: httpStatus.VALIDATION_ERROR,
+                }
+              
+            }
+            if(result.password != data.password){
+                return {
+                    data: 'the password is not correct',
+                    code: httpStatus.VALIDATION_ERROR,
+                } 
+            }
+            console.log('dddddddddddddddddd');
+            console.log(result.shit());
+         const token =   result.generateToken();
+            console.log('ffffffffffffff');
+            console.log(token);
+            return {
+                data: {result: result, token: token},
+                code: httpStatus.CREATED,
+            };
+        } 
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+    }
+ 
 }
 
 module.exports = User;

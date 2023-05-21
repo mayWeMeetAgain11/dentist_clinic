@@ -48,5 +48,16 @@ module.exports = {
         });
     },
 
+    login: async (req, res) => {
+        const data = req.body;
+        // console.log("data");
+        // console.log(data);
+
+        const result = await  User.login(data);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
 
 }

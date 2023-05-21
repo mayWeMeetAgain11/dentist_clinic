@@ -12,9 +12,12 @@ const { JsonWebTokenError } = require('jsonwebtoken');
 
 module.exports = (sequelize, DataTypes) => {
     class UserModel extends Model {
-        
+        shit(){
+            return 2;
+        }
         generateToken(){
             const token = jwt.sign({id: this.id, type : this.type}, process.env.SECRET_KEY , {expiresIn: '24h'});
+            console.log(token);
             return token;
         }
         static associate(models) {

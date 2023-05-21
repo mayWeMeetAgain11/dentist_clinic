@@ -3,7 +3,6 @@ const {Patient , PatientDocument} = require('./service');
 
 module.exports = {
 
-
     add: async (req, res) => {
         const data = req.body;
 
