@@ -16,8 +16,12 @@ module.exports = (sequelize, DataTypes) => {
     }
     RoomModel.init({
         number: {
-            type: DataTypes.INTEGER,
-            allowNull: false
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: false,
+            validate: {
+                isInt: true,
+
+            },
         }
     }, {
         sequelize,
