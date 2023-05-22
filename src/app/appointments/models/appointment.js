@@ -29,7 +29,12 @@ module.exports = (sequelize, DataTypes) => {
     AppointmentModel.init({
         title: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate: {
+                len: [1, 100],
+                isString: true,
+                matches: /^[a-zA-Z0-9\s\\.,!?"'-]*$/,
+            },
         },
         status: {
             type: DataTypes.BOOLEAN,
