@@ -32,14 +32,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: {
                 len: [1, 100],
-                isString: true,
                 matches: /^[a-zA-Z0-9\s\\.,!?"'-]*$/,
             },
         },
         status: {
             type: DataTypes.BOOLEAN,
+            defaultValue: false,
             allowNull: false,
-            default: false
         }
     }, {
         sequelize,

@@ -11,6 +11,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/patient',require('./src/app/patients/router'));
 app.use('/room',require('./src/app/rooms/router'));
+app.use('/appointment',require('./src/app/appointments/router'));
 
 app.use('/user',require('./src/app/users/router'));
 
