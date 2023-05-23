@@ -4,13 +4,13 @@ const {Model} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class AppointmentReservationModel extends Model {
 
-        customValidation(days) {
-            const today = new Date();
-            const outOfRange = new Date(today);
-            outOfRange.setDate(today.getDate() + days);
-            const outOfRangeISO = outOfRange.toISOString().split('T')[0];
-            return outOfRangeISO;
-        }
+        // customValidation(days) {
+        //     const today = new Date();
+        //     const outOfRange = new Date(today);
+        //     outOfRange.setDate(today.getDate() + days);
+        //     const outOfRangeISO = outOfRange.toISOString().split('T')[0];
+        //     return outOfRangeISO;
+        // }
 
         static associate(models) {
             this.belongsTo(models.AppointmentModel, {
@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
             this.belongsTo(models.ChairModel, {
                 foreignKey: {
                     name: 'chair_id',
-                    allowNull: false,
+                    // allowNull: false,
                 },
                 as: 'chair',
             });
@@ -46,15 +46,22 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: {
                     args: true
                 },
-                isAfter: {
-                    args: function (value, next) {
-                        const yesterday = this.customValidation(-1);
-                        next(yesterday);
-                    },
-                    msg: "the date should be after today's date",
+                // isAfter: {
+                //     args: new Date(new Date().setDate(new Date().getDate() - 1)).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-'),
+                //     msg: "the date should be today's date or after",
+                // },
+                isValidDate: function (value) {
+                    const now = new Date();
+                    const yesterday = new Date(new Date().setDate(new Date().getDate()));
+                    if (value.getDate() < yesterday.getDate()) {
+                        throw new Error("the date should be today's date or after, please choose a future reservation!");
+                    }
+                    else if (value.getDate() == yesterday.getDate()){
+                        if (value.getTime() < yesterday.getTime()) {
+                            throw new Error("this time has passed, please choose a future reservation!");
+                        }
+                    }
                 },
-                isDate: true,
-                comment: "you add date after today's date, make sure the start date is not empty!"
             }
         },
         end: {
@@ -64,52 +71,58 @@ module.exports = (sequelize, DataTypes) => {
                 notEmpty: {
                     args: false
                 },
-                isAfter: {
-                    args: function (value, next) {
-                        const yesterday = this.customValidation(-1);
-                        next(yesterday);
-                    },
-                    msg: "the date should be today's date or after",
+                isValidDate: function (value) {
+                    const now = new Date();
+                    const yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+                    if (value.getDate() < yesterday.getDate()) {
+                        throw new Error("the date should be today's date or after, please choose a future reservation!");
+                    }
+                    else if (value.getDate() == yesterday.getDate()){
+                        if (value.getTime() < yesterday.getTime()) {
+                            throw new Error("this time has passed, please choose a future reservation!");
+                        }
+                    }
                 },
-                isDate: true,
+            //     isAfter: {
+            //         args: () => new Date(new Date().setDate(new Date().getDate() - 1)),
+            //         msg: "the date should be today's date or after",
+            //     },
+            //     // isDate: true,
             }
         },
         done: {
             type: DataTypes.DATE,
             allowNull: true,
             validate: {
-                // customValidation(days) {
-                //     const today = new Date();
-                //     const outOfRange = new Date(today);
-                //     outOfRange.setDate(today.getDate() + days);
-                //     const outOfRangeISO = outOfRange.toISOString().split('T')[0];
-                //     return outOfRangeISO;
-                // },
                 notEmpty: {
                     args: false
                 },
+                // isValidDate: function (value) {
+                //     const now = new Date();
+                //     const yesterday = new Date(new Date().setDate(new Date().getDate() - 1));
+                //     if (value.getDate() < yesterday.getDate()) {
+                //         throw new Error("the date should be today's date or after, please choose a future reservation!");
+                //     }
+                //     else if (value.getDate() == yesterday.getDate()){
+                //         if (value.getTime() < yesterday.getTime()) {
+                //             throw new Error("this time has passed, please choose a future reservation!");
+                //         }
+                //     }
+                // },
                 isAfter: {
-                    args: function (value, next) {
-                        const yesterday = this.customValidation(-1);
-                        next(yesterday);
-                    },
+                    args: new Date().toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-'),
                 },
-                isBefore: {
-                    args: function (value, next) {
-                        const tomorrow = this.customValidation(1);
-                        next(tomorrow);
-                    },
-                },
-                isDate: true,
-                comment: "the date must be the same date of today"
+            //     isBefore: {
+            //         args: () => new Date(new Date().setDate(new Date().getDate() + 1)),
+            //     },
+            //     isDate: true,
             }
         },
         comment: {
             type: DataTypes.STRING,
             allowNull: true,
             validate: {
-                len: [1, 2000],
-                isString: true,
+                len: [1, 1000],
                 matches: /^[a-zA-Z0-9\s\\.,!?"'-]*$/,
             },
         },
