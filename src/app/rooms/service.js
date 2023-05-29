@@ -1,6 +1,223 @@
 const { httpStatus, console } = require('../../../utils/index');
-const {ChairModel, DepartmentModel, RoomModel, AppointmentReservationModel} = require('./models');
+const {ChairModel, DepartmentModel, RoomModel, AppointmentReservationModel} = require('../index');
 
+class Room {
+	constructor(data) {
+		this.number = data.number;
+	}
+
+	async add() {
+		try {
+			const result = await RoomModel.create(this);
+			return { data: result, code: httpStatus.CREATED };
+		} catch (error) {
+			console.error(error);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+	async update(id) {
+		try {
+			const result = await RoomModel.update(this, {
+				where: {
+					id: id,
+				},
+			});
+			if (result[0] == 1) {
+				return {
+					data: 'updated',
+					code: httpStatus.UPDATED,
+				};
+			} else {
+				return {
+					data: 'something wrong happened',
+					code: httpStatus.BAD_REQUEST,
+				};
+			}
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+	static async delete(id) {
+		try {
+			const result = await RoomModel.destroy({
+				where: {
+					id: id,
+				},
+			});
+			if (result == 1) {
+				return {
+					data: 'deleted',
+					code: httpStatus.OK,
+				};
+			} else {
+				return {
+					data: 'something wrong happened',
+					code: httpStatus.BAD_REQUEST,
+				};
+			}
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+    static async getAll() {
+		try {
+			const result = await RoomModel.findAll();
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+    static async get(id) {
+		try {
+			const result = await RoomModel.findOne({
+				where: {
+					id: id
+				}
+			});
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+}
+
+class Department {
+	constructor(data) {
+		this.name = data.name;
+	}
+
+	async add() {
+		try {
+			const result = await DepartmentModel.create(this);
+			return { data: result, code: httpStatus.CREATED };
+		} catch (error) {
+			console.error(error);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+	async update(id) {
+		try {
+			const result = await DepartmentModel.update(this, {
+				where: {
+					id: id,
+				},
+			});
+			if (result[0] == 1) {
+				return {
+					data: 'updated',
+					code: httpStatus.UPDATED,
+				};
+			} else {
+				return {
+					data: 'something wrong happened',
+					code: httpStatus.BAD_REQUEST,
+				};
+			}
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+	static async delete(id) {
+		try {
+			const result = await DepartmentModel.destroy({
+				where: {
+					id: id,
+				},
+			});
+			if (result == 1) {
+				return {
+					data: 'deleted',
+					code: httpStatus.OK,
+				};
+			} else {
+				return {
+					data: 'something wrong happened',
+					code: httpStatus.BAD_REQUEST,
+				};
+			}
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+    static async getAll() {
+		try {
+			const result = await DepartmentModel.findAll();
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+	
+    static async get(id) {
+		try {
+			const result = await DepartmentModel.findOne({
+				where: {
+					id: id
+				}
+			});
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+}
 
 class Chair {
 	constructor(data) {
@@ -47,19 +264,14 @@ class Chair {
 		}
 	}
 
+	// delete should be tested
 	static async delete(id) {
 		try {
-            const chairWithFutureReservation = await ChairModel.findOne({
-                where: {
-                    chair_id: id,
-                },
-                include: {
-                    model: AppointmentReservationModel
-                }
-            });
-            if (chairWithFutureReservation) {
+            const chairWithFutureReservation = await Chair.get(id);
+			// to check if the chair has future reservations 
+            if (chairWithFutureReservation.AppointmentReservationModel) {
                 return {
-                    data: chairReservation,
+                    data: chairWithFutureReservation,
                     code: httpStatus.Multiple_Choices
                 };
             }
@@ -68,20 +280,15 @@ class Chair {
 					id: id,
 				},
 			});
-            const result = await ChairModel.findOne({
-                where: {
-                    chair_id: id,
-                },
-                include: {
-                    model: AppointmentReservationModel
-                }
-            });
-			if (result[0] == 1) {
+			// the result is to make the data looks the same
+            const result = await Chair.get(id);
+			if (removedChair == 1) {
 				return {
-					data: 'deleted',
-					code: httpStatus.DELETED,
+					data: result,
+					code: httpStatus.OK,
 				};
-			} else {
+			} 
+			else {
 				return {
 					data: 'something wrong happened',
 					code: httpStatus.BAD_REQUEST,
@@ -96,9 +303,34 @@ class Chair {
 		}
 	}
 
-    async getAll() {
+    static async getAll() {
 		try {
 			const result = await ChairModel.findAll();
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+	
+	// get with appointment_reservation
+    static async get(id) {
+		try {
+			const result = await ChairModel.findOne({
+				where: {
+					id: id
+				},
+				include: {
+					model: AppointmentReservationModel,
+					as: "appointment_reservations"
+				}
+			});
             return {
                 data: result,
                 code: httpStatus.OK,
