@@ -12,10 +12,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/patient',require('./src/app/patients/router'));
 
 app.use('/user',require('./src/app/users/router'));
+app.use('/bill',require('./src/app/bills/router'));
 
 
 app.listen({ port: 3000 }, async () => {
-    await database.sync({alter:true});
+    await database.sync();
     //await database.authenticate();
     console.log('starting');
 });
