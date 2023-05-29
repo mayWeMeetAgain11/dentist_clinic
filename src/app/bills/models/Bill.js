@@ -18,10 +18,23 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     BillModel.init({
-        payment: {
+        total : {
+            type : DataTypes.DOUBLE,
+            allowNull : false
+        },
+        paid: {
             type: DataTypes.DOUBLE,
             allowNull: false,
         },
+        rest: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+        },
+        status : {
+            type :DataTypes.STRING,
+            defaultValue : "new"
+
+        }
     }, {
         sequelize,
         modelName: 'BillModel',
