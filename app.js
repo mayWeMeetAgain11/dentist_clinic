@@ -14,10 +14,11 @@ app.use('/room',require('./src/app/rooms/router'));
 app.use('/appointment',require('./src/app/appointments/router'));
 
 app.use('/user',require('./src/app/users/router'));
+app.use('/bill',require('./src/app/bills/router'));
 
 
 app.listen({ port: 3000 }, async () => {
-    // await database.sync({alter:true});
-    await database.authenticate();
+    await database.sync();
+    //await database.authenticate();
     console.log('starting');
 });
