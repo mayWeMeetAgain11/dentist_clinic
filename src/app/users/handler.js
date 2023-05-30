@@ -1,6 +1,6 @@
 const multer = require('multer');
 const doctordocument = require('./models/doctordocument');
-const {User, DoctorDocument} = require('./service');
+const {User, DoctorDocument, DoctorDocumentAccommodation} = require('./service');
 
 
 
@@ -30,6 +30,7 @@ const {User, DoctorDocument} = require('./service');
 // const upload = multer({ storage: fileStorage, limits: {/**fileSize: '1000000'*/} ,fileFilter: fileFilter }).single('pdf')
 
 module.exports = {
+    
    // user
     
 
@@ -55,7 +56,9 @@ module.exports = {
 
     getOne: async (req, res) => {
         const id = req.params.id;
-        const result = await User.getOneUser(id);
+        const type = req.params.type;
+
+        const result = await User.getOneUser(id, type);
         res.status(result.code).send({
             data: result.data ,
         });
@@ -112,8 +115,27 @@ module.exports = {
         });
     },
 
+    // doctor aaccommodation document
 
+    getAllDocumentAccommodation: async (req, res) => {
 
+        const {id} = req.params;
+       // const { path } = req.file;
+       console.log(req.params);
+    //  const type = req.body;
+       const result = await DoctorDocumentAccommodation.getAllDocumentAccommodation(id);
+       res.status(result.code).send({
+           data: result.data,
+       });
+   },
 
+   addDocumentAccommodation: async (req, res) => {
+       const data = req.body;
+       const  path  = req.file.path;
+        const result = await new DoctorDocumentAccommodation(data, path).addDocumentAccommodation();
+       res.status(result.code).send({
+           data: result.data,
+       });
+   },
 
 }

@@ -1,37 +1,12 @@
-const { destroy, add, getOne, getAll, update , login,  getAllDocument, addDocument} = require('./handler');
+const { destroy, add, getOne, getAll, update , login,  getAllDocument, addDocument,getAllDocumentAccommodation , addDocumentAccommodation} = require('./handler');
 const router = require('express').Router();
 const multer = require('multer');
 const upload = require('../../../utils/fileFunctions/file_pdf').upload;
 
-
-// const fileStorage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'public/pdf');
-//     },
-//     // filename: (req, file, cb) => {
-//     //     // cb(null, file.originalname);
-//     //     // new date().toISOString() + '-' +
-//     //     cb(null, Date.now() + path.extname(file.originalname)) ;
-//     // }
-//     // filename: function (req, file, cb) { 
-//     //     cb(null, file.fieldname + '-' + Date.now())
-//     //   }
-//     filename: (req, file, cb) => {  
-//         cb(null, file.originalname);
-//         // new date().toISOS tring() + '-' + 
-//     }
-// });
-// const fileFilter = (req, file, cb) => {
-//         cb(null, true);
-// };
-
-// const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
-
-
 //user 
 router.post('/create', add);
 router.get('/getall/:type', getAll);
-router.get('/get/:id', getOne);
+router.get('/get/:id/:type', getOne);
 router.put('/update/:id', update);
 router.delete('/delete/:id', destroy);
 router.post('/login', login);
@@ -40,6 +15,11 @@ router.post('/login', login);
 
 router.get('/doctorDocument/:id', getAllDocument);
 router.post('/createDocument', upload.single('document'), addDocument);
+
+// doctor ducument accommodation
+
+router.get('/doctorDocumentAccommodation/:id', getAllDocumentAccommodation);
+router.post('/createDocumentAccommodation', upload.single('document'), addDocumentAccommodation);
 
 
 module.exports = router; 
