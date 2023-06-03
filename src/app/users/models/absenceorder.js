@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     AbsenceOrderModel.init({
-        accepted: {
+        accepted: { 
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: null
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 notEmpty: {
                     args: true,
-                    msg: 'The start date is required'
+                  //  msg: "The start date is required"
                 },
             }
         },
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             validate: {
                 notEmpty: true,
-                msg: 'The end date is required'
+              //  msg: "The end date is required"
             }
         },
     }, {
