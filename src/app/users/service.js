@@ -1,4 +1,4 @@
-const { UserModel, DoctorDocumentModel , DoctorAccommodationModel} = require('../../app');
+const { UserModel, DoctorDocumentModel , DoctorAccommodationModel, AbsenceOrderModel} = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require('sequelize');
 
@@ -332,4 +332,57 @@ class DoctorDocumentAccommodation {
  
 }
 
-module.exports = { User, DoctorDocument , DoctorDocumentAccommodation };  
+class AbsenceOrder {
+
+    constructor(data, path) {
+        this.accepted = data.accepted;
+        this.start_date = data.start_date;
+        this.end_date = data.end_date; 
+        this.user_id = data.user_id;
+    }
+
+    static async getAllAbsenceOrder(id) {
+
+        try {
+   
+            const result = await AbsenceOrderModel.findAll({
+                where: {
+                    user_id: id
+                }
+            });
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
+    async addAbsenceOrder() {
+
+        try {
+          
+            const result = await AbsenceOrderModel.create(this);
+             return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+    }
+  
+ 
+}
+
+
+module.exports = { User, DoctorDocument , DoctorDocumentAccommodation , AbsenceOrder};  

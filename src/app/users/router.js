@@ -1,4 +1,7 @@
-const { destroy, add, getOne, getAll, update , login,  getAllDocument, addDocument,getAllDocumentAccommodation , addDocumentAccommodation} = require('./handler');
+const { destroy, add, getOne, getAll, update , login,  
+    getAllDocument, addDocument,getAllDocumentAccommodation , addDocumentAccommodation, 
+    getAllAbsenceOrders, addAbsenceOrder
+} = require('./handler');
 const router = require('express').Router();
 const multer = require('multer');
 const upload = require('../../../utils/fileFunctions/file_pdf').upload;
@@ -20,6 +23,13 @@ router.post('/createDocument', upload.single('document'), addDocument);
 
 router.get('/doctorDocumentAccommodation/:id', getAllDocumentAccommodation);
 router.post('/createDocumentAccommodation', upload.single('document'), addDocumentAccommodation);
+
+// absence order
+router.get('/absenceOrder/:id', getAllAbsenceOrders);
+router.post('/createAbsenceOrder',   addAbsenceOrder);
+
+
+
 
 
 module.exports = router; 

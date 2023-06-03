@@ -1,6 +1,6 @@
 const multer = require('multer');
 const doctordocument = require('./models/doctordocument');
-const {User, DoctorDocument, DoctorDocumentAccommodation} = require('./service');
+const {User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder} = require('./service');
 
 
 
@@ -137,5 +137,25 @@ module.exports = {
            data: result.data,
        });
    },
+
+   // Absence order
+
+   getAllAbsenceOrders: async (req, res) => {
+    const {id} = req.params;
+
+    const result = await AbsenceOrder.getAllAbsenceOrder(id);
+    res.status(result.code).send({
+        data: result.data,
+    });
+   },
+
+   addAbsenceOrder: async (req, res) => {
+    console.log(req.body);
+    const data = req.body;
+      const result = await new AbsenceOrder(data).addAbsenceOrder();
+    res.status(result.code).send({
+        data: result.data,
+    });
+},
 
 }
