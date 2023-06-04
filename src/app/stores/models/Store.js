@@ -18,19 +18,26 @@ module.exports = (sequelize, DataTypes) => {
         name: {
             type: DataTypes.STRING,
             allowNull: false,
+            defaultValue: "",
         },
         storage: {
             type: DataTypes.BIGINT,
+            allowNull: false,
             defaultValue: 0,
         },
         unit: {
             type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: "number",
         },
         price: {
             type: DataTypes.DOUBLE,
+            allowNull: false,
+            defaultValue: 0,
         },
         limit: {
             type: DataTypes.BIGINT,
+            allowNull: false,
             defaultValue: 0,
         },
 
