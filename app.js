@@ -16,10 +16,12 @@ app.use('/dentist/appointment',require('./src/app/appointments/router'));
 app.use('/dentist/user',require('./src/app/users/router'));
 app.use('/dentist/bill',require('./src/app/bills/router'));
 app.use('/dentist/store',require('./src/app/stores/router'));
+app.get('/dentist',(req,res)=>{
+    return res.json("welcome to our Dentist Clinik app!" );
+})
 
-
-app.listen({ port: 3000 }, async () => {
+app.listen({ port: 3010 }, async () => {
     //await database.sync();
-    //await database.authenticate();
+    await database.authenticate();
     console.log('starting');
 });
