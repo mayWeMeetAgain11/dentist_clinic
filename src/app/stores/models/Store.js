@@ -40,6 +40,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0,
         },
+        photo : {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: "",
+        }
 
     }, {
         sequelize,

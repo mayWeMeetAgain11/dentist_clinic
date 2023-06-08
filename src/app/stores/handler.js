@@ -5,8 +5,10 @@ module.exports = {
 
     addItems: async (req, res) => {
 
-        const { items } = req.body;
-        const result = await Store.addItems(items);
+        const data = req.body;
+        const file = req.file;
+
+        const result = await new Store(data,file).addItems();
         res.status(result.code).send({
             data: result.data,
         });

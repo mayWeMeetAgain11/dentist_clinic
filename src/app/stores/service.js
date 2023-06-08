@@ -1,23 +1,23 @@
 const { StoreModel, CategoryModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
-
+const fs = require('fs');
 class Store {
 
 
-    constructor(data) {
+    constructor(data, file) {
         this.name = data.name;
         this.storage = data.storage;
         this.unit = data.unit;
         this.price = data.price;
         this.limit = data.limit;
+        this.photo = file.path;
 
     }
 
-    static async addItems(items) {
+    async addItems() {
         try {
 
-            console.debug(items);
-            const result = await StoreModel.bulkCreate(items);
+            const result = await StoreModel.create(this);
             return {
                 data: result,
                 code: httpStatus.OK,
@@ -25,6 +25,7 @@ class Store {
 
         }
         catch (error) {
+            fs.unlinkSync(this.photo);
             return {
                 data: error.message,
                 code: httpStatus.BAD_REQUEST,
@@ -57,8 +58,8 @@ class Store {
         try {
 
             const result = await StoreModel.findAll({
-                where:{
-                    category_id : id
+                where: {
+                    category_id: id
                 }
             });
             return {

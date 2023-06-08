@@ -3,7 +3,6 @@ const { destroy, add, getOne, getAll, update , login,
     getAllAbsenceOrders, addAbsenceOrder
 } = require('./handler');
 const router = require('express').Router();
-const multer = require('multer');
 const upload = require('../../../utils/fileFunctions/file_pdf').upload;
 
 //user 
