@@ -133,5 +133,13 @@ module.exports = {
         });
     },
 
+    destroyChairAnyWay: async (req, res) => {
+        const id = req.params.id;
+        const result = await  Chair.deleteAnyWay(id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
 
 }

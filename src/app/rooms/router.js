@@ -14,43 +14,46 @@ const {
     getAllChairs,
     updateChair,
     destroyChair,
+    destroyChairAnyWay,
 } = require('./handler');
 const router = require('express').Router();
 
 // Room
 
-router.post('/createRoom', addRoom);
+router.post('/', addRoom);
 
-router.get('/getRoom/:id', getRoom);
+router.get('/:id', getRoom);
 
-router.get('/getAllRooms', getAllRooms);
+router.get('/', getAllRooms);
 
-router.put('/updateRoom/:id', updateRoom);
+router.put('/:id', updateRoom);
 
-router.delete('/deleteRoom/:id', destroyRoom);
+router.delete('/:id', destroyRoom);
 
 // Department
 
-router.post('/createDepartment', addDepartment);
+router.post('/department', addDepartment);
 
-router.get('/getDepartment/:id', getDepartment);
+router.get('/department/:id', getDepartment);
 
-router.get('/getAllDepartments', getAllDepartments);
+router.get('/departments/getAll', getAllDepartments);
 
-router.put('/updateDepartment/:id', updateDepartment);
+router.put('/department/:id', updateDepartment);
 
-router.delete('/deleteDepartment/:id', destroyDepartment);
+router.delete('/department/:id', destroyDepartment);
 
 // Chair
 
-router.post('/createChair', addChair);
+router.post('/chair', addChair);
 
-router.get('/getChair/:id', getChair);
+router.get('/chair/:id', getChair);
 
-router.get('/getAllChairs', getAllChairs);
+router.get('/chairs/getAll', getAllChairs);
 
-router.put('/updateChair/:id', updateChair);
+router.put('/chair/:id', updateChair);
 
-router.delete('/deletechair/:id', destroyChair);
+router.delete('/chair/:id', destroyChair);
+
+router.delete('/chair/force-delete/:id', destroyChairAnyWay);
 
 module.exports = router;

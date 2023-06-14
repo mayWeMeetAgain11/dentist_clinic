@@ -14,27 +14,27 @@ const router = require('express').Router();
 
 // Appointment
 
-router.post('/createAppointment', addAppointment);
+router.post('/', addAppointment);
 
-router.get('/getAppointment/:id', getAppointment);
+router.get('/:id', getAppointment);
 
-router.get('/getAllAppointments', getAllAppointments);
+router.get('/', getAllAppointments);
 
-router.put('/updateAppointment/:id', updateAppointment);
+router.put('/:id', updateAppointment);
 
-router.delete('/deleteAppointment/:id', destroyAppointment);
+router.delete('/:id', destroyAppointment);
 
 // AppointmentReservation
 
-router.post('/createAppointmentReservation', addAppointmentReservation);
+router.post('/reservation/', addAppointmentReservation);
 
-router.get('/getAppointmentReservation/:id', getAppointmentReservation);
+router.get('/reservations/getAll', getAllAppointmentReservations);
 
-router.get('/getAllAppointmentReservations', getAllAppointmentReservations);
+router.get('/reservation/:id', getAppointmentReservation);
 
-router.put('/updateAppointmentReservation/:id', updateAppointmentReservation);
+router.put('/reservation/:id', updateAppointmentReservation);
 
-router.delete('/deleteAppointmentReservation/:id', destroyAppointmentReservation);
+router.delete('/reservation/:id', destroyAppointmentReservation);
 
 // somewhere between :)
 

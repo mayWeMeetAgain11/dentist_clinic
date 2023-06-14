@@ -57,7 +57,7 @@ module.exports = {
     },
 
     getAllAppointmentReservations: async (req, res) => {
-
+        // console.log("before");
         const result = await AppointmentReservation.getAll();
         res.status(result.code).send({
             data: result.data,

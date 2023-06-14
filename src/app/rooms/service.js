@@ -4,6 +4,7 @@ const {ChairModel, DepartmentModel, RoomModel, AppointmentReservationModel} = re
 class Room {
 	constructor(data) {
 		this.number = data.number;
+		this.department_id = data.department_id;
 	}
 
 	async add() {
@@ -222,6 +223,7 @@ class Department {
 class Chair {
 	constructor(data) {
 		this.number = data.number;
+		this.room_id = data.room_id;
 	}
 
 	async add() {
@@ -268,10 +270,11 @@ class Chair {
 	static async delete(id) {
 		try {
             const chairWithFutureReservation = await Chair.get(id);
+			console.log(chairWithFutureReservation[`appointment_reservations`]);
 			// to check if the chair has future reservations 
-            if (chairWithFutureReservation.AppointmentReservationModel) {
+            if (chairWithFutureReservation.appointment_reservations && !chairWithFutureReservation.getDataValue('appointment_reservations')[0].start) {
                 return {
-                    data: chairWithFutureReservation,
+                    data: "this chair has future appointment reservations",
                     code: httpStatus.Multiple_Choices
                 };
             }
@@ -281,10 +284,39 @@ class Chair {
 				},
 			});
 			// the result is to make the data looks the same
-            const result = await Chair.get(id);
+            // const result = await Chair.get(id);
 			if (removedChair == 1) {
 				return {
-					data: result,
+					data: "deleted",
+					code: httpStatus.OK,
+				};
+			} 
+			else {
+				return {
+					data: 'something wrong happened',
+					code: httpStatus.BAD_REQUEST,
+				};
+			}
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+	//to delete chair although it has future appointment reservations (did not finished yet)
+	static async deleteAnyWay(id) {
+		try {
+			const removedChair = await ChairModel.destroy({
+				where: {
+					id: id,
+				},
+			});
+			if (removedChair == 1) {
+				return {
+					data: "deleted",
 					code: httpStatus.OK,
 				};
 			} 
@@ -328,7 +360,8 @@ class Chair {
 				},
 				include: {
 					model: AppointmentReservationModel,
-					as: "appointment_reservations"
+					as: "appointment_reservations",
+					order: [["start", "DESC"]]
 				}
 			});
             return {
