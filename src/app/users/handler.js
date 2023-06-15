@@ -37,7 +37,7 @@ module.exports = {
     getAll: async (req, res) => {
         const type = req.params.type;
         console.log(req.params);
-     //  const type = req.body;
+        //  const type = req.body;
         const result = await User.getAllUsers(type);
         res.status(result.code).send({
             data: result.data,
@@ -47,7 +47,7 @@ module.exports = {
 
     add: async (req, res) => {
         const data = req.body;
-
+        console.log("kkk");
         const result = await new User(data).addUser();
         res.status(result.code).send({
             data: result.data,
@@ -81,10 +81,11 @@ module.exports = {
         });
     },
 
-    login: async (req, res) => {
+    loginHandler: async (req, res) => {
+        console.log("before fetch data");
         const data = req.body;
-        // console.log("data");
-        // console.log(data);
+        console.log("data");
+        console.log(data);
 
         const result = await  User.login(data);
         res.status(result.code).send({
@@ -96,7 +97,7 @@ module.exports = {
     
     getAllDocument: async (req, res) => {
 
-         const {id} = req.params;
+        const {id} = req.params;
         // const { path } = req.file;
         console.log(req.params);
      //  const type = req.body;
@@ -109,7 +110,7 @@ module.exports = {
     addDocument: async (req, res) => {
         const data = req.body;
         const { path } = req.file;
-         const result = await new DoctorDocument(data, path).addDocument();
+        const result = await new DoctorDocument(data, path).addDocument();
         res.status(result.code).send({
             data: result.data,
         });
@@ -121,41 +122,41 @@ module.exports = {
 
         const {id} = req.params;
        // const { path } = req.file;
-       console.log(req.params);
+        console.log(req.params);
     //  const type = req.body;
-       const result = await DoctorDocumentAccommodation.getAllDocumentAccommodation(id);
-       res.status(result.code).send({
-           data: result.data,
-       });
-   },
+        const result = await DoctorDocumentAccommodation.getAllDocumentAccommodation(id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
 
-   addDocumentAccommodation: async (req, res) => {
-       const data = req.body;
-       const  path  = req.file.path;
-        const result = await new DoctorDocumentAccommodation(data, path).addDocumentAccommodation();
-       res.status(result.code).send({
-           data: result.data,
-       });
-   },
+    addDocumentAccommodation: async (req, res) => {
+        const data = req.body;
+        const  path  = req.file.path;
+            const result = await new DoctorDocumentAccommodation(data, path).addDocumentAccommodation();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
 
    // Absence order
 
-   getAllAbsenceOrders: async (req, res) => {
-    const {id} = req.params;
+    getAllAbsenceOrders: async (req, res) => {
+        const {id} = req.params;
 
-    const result = await AbsenceOrder.getAllAbsenceOrder(id);
-    res.status(result.code).send({
-        data: result.data,
-    });
-   },
+        const result = await AbsenceOrder.getAllAbsenceOrder(id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
 
-   addAbsenceOrder: async (req, res) => {
-    console.log(req.body);
-    const data = req.body;
-      const result = await new AbsenceOrder(data).addAbsenceOrder();
-    res.status(result.code).send({
-        data: result.data,
-    });
-},
+    addAbsenceOrder: async (req, res) => {
+        console.log(req.body);
+        const data = req.body;
+        const result = await new AbsenceOrder(data).addAbsenceOrder();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
 
 }

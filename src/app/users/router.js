@@ -1,4 +1,4 @@
-const { destroy, add, getOne, getAll, update , login,  
+const { destroy, add, getOne, getAll, update , loginHandler,  
     getAllDocument, addDocument,getAllDocumentAccommodation , addDocumentAccommodation, 
     getAllAbsenceOrders, addAbsenceOrder
 } = require('./handler');
@@ -6,12 +6,13 @@ const router = require('express').Router();
 const upload = require('../../../utils/fileFunctions/file_pdf').upload;
 
 //user 
+router.post('/login', loginHandler);
 router.post('/create', add);
 router.get('/getall/:type', getAll);
 router.get('/get/:id/:type', getOne);
 router.put('/update/:id', update);
 router.delete('/delete/:id', destroy);
-router.post('/login', login);
+
 
 //doctor document
 

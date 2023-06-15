@@ -21,6 +21,14 @@ module.exports = (sequelize, DataTypes) => {
             return token;
         }
         static associate(models) {
+            this.hasMany(models.UserModel, {
+                foreignKey: 'manager_id',
+                as: 'employees',
+            });
+            this.belongsTo(models.UserModel, {
+                foreignKey: 'manager_id',
+                as: 'manager',
+            });
             this.hasMany(models.AppointmentModel, {
                 foreignKey: 'employee_id',
                 as: 'employee_appointments',
@@ -95,8 +103,12 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 notEmpty: {
                     args: true,
-                    msg: "Email cannot be empty",
+                    msg: "card_id cannot be empty",
                 },
+                // unique: {
+                //     args: true,
+                //     msg: "card_id should be unique"
+                // },
             },
         },
         email: {
@@ -246,6 +258,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM,
             values: type,
             allowNull: false,
+        },
+        manager_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            // defaultValue: ""
         },
     }, {
         sequelize,

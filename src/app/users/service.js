@@ -22,6 +22,7 @@ class User {
         this.gender = data.gender;
         this.deserve = data.deserve;
         this.type = data.type;
+        this.manager_id = data.manager_id;
     }
     static async getAllUsers(type) {
         try {
@@ -74,7 +75,9 @@ class User {
     async addUser() {
 
         try {
+            console.log("before");
             const result = await UserModel.create(this);
+            console.log("after");
             return {
                 data: result,
                 code: httpStatus.CREATED,
@@ -209,10 +212,10 @@ class User {
                     code: httpStatus.VALIDATION_ERROR,
                 }
             }
-            console.log('dddddddddddddddddd');
+            // console.log('dddddddddddddddddd');
             console.log(result.shit());
             const token = result.generateToken();
-            console.log('ffffffffffffff');
+            // console.log('ffffffffffffff');
             console.log(token);
             return {
                 data: { result: result, token: token },
