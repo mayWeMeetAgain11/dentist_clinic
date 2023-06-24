@@ -1,7 +1,9 @@
 const multer = require('multer');
 const doctordocument = require('./models/doctordocument');
-const {User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder} = require('./service');
-
+const {User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder} = require('./service');
+const {Store} = require('../stores/service');
+const {sequelize} = require('../../../utils/database/config');
+const httpStatus = require('../../../utils/constants/httpStatus');
 
 
 
@@ -35,10 +37,10 @@ module.exports = {
     
 
     getAll: async (req, res) => {
-        const type = req.params.type;
-        console.log(req.params);
+        // const {type} = req.params;
+        // console.log(type);
         //  const type = req.body;
-        const result = await User.getAllUsers(type);
+        const result = await User.getAllUsers();
         res.status(result.code).send({
             data: result.data,
         });
@@ -56,9 +58,9 @@ module.exports = {
 
     getOne: async (req, res) => {
         const id = req.params.id;
-        const type = req.params.type;
+        // const type = req.params.type;
 
-        const result = await User.getOneUser(id, type);
+        const result = await User.getOneUser(id);
         res.status(result.code).send({
             data: result.data ,
         });
@@ -157,6 +159,40 @@ module.exports = {
         res.status(result.code).send({
             data: result.data,
         });
+    },
+
+
+    // maybe the transaction faild because i do not have any id like this in data
+
+    addDoctorOrder: async (req, res) => {
+
+        const data = req.body;
+        const {doctor_id} = req.params;
+        // data.setDataValue('doctor_id', doctor_id);
+        data.doctor_id = doctor_id;
+
+        // const t = await sequelize.transaction();
+
+        try{
+            const result = await sequelize.transaction(async (t) => {
+                const result1 = await new DoctorMaterialOrder(data).addOrder({ transaction: t });
+                console.log("after first fun in t");
+                const result2 = await  Store.order(data, { transaction: t });
+                console.log("after second fun in t");
+                return { result1, result2 };
+            });
+            console.log("after retuurn two results");
+            res.status(result.result2.code).send({
+                data: result.result2.data,
+            });
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
     },
 
 }

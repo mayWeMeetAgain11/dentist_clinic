@@ -1,8 +1,9 @@
 const { StoreModel, CategoryModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const fs = require('fs');
-class Store {
 
+
+class Store {
 
     constructor(data, file) {
         this.name = data.name;
@@ -100,11 +101,34 @@ class Store {
             };
         }
     }
+    
+    static async order(data) {
+        console.log("in order");
+        try {
 
+            console.log("in order");
+            let result = await StoreModel.findByPk(data.store_id);
+            console.log(result);
+            result.storage = result.storage - data.quantity;
+            result.save();
+            console.log(result.storage);
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
 
-
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
 
 }
+
+
 class Category {
 
 

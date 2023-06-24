@@ -85,7 +85,7 @@ class Patient {
                     },
                 }
             );
-            console.warn(result[0]);
+            // console.warn(result[0]);
             if (result[0] == 1) {
                 return {
                     data: 'updated',

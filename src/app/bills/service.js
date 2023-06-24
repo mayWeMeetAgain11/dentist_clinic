@@ -17,18 +17,18 @@ class Bill {
                 where: {
                     patient_id: id,
                     status: {
-                        [Op.ne]: 'done'
+                        [Op.ne]: true
                     }
                 },
                 attributes: ['id'],
             });
-            console.info(appointment.id)
+            // console.log(appointment);
 
             const appointmentReservation1 = await AppointmentReservationModel.findAll({
                 where: {
                     appointment_id: appointment.id,
                 },
-                attributes: ['cost', 'comment'],
+                attributes: ['cost', 'comment', 'start'],
             });
             const totalReservationCost = await appointmentReservation1.reduce((acc, curr) => acc + curr.cost, 0);
 

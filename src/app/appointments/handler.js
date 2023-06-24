@@ -90,4 +90,27 @@ module.exports = {
         });
     },
 
+    getAllReservationForOneAppointment: async (req, res) => {
+        const appointment_id = req.params.appointment_id;
+        const result = await AppointmentReservation.getAppointmentReservations(appointment_id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    searchReservation: async (req, res) => {
+        const {
+            startDate, 
+            endDate, 
+            doctor_id, 
+            treatmentType, 
+            start, 
+            end,
+        } = req.body;
+        const result = await AppointmentReservation.search(startDate, endDate, doctor_id, treatmentType, start, end);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
 }

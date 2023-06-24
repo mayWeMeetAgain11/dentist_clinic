@@ -1,4 +1,4 @@
-const { UserModel, DoctorDocumentModel, DoctorAccommodationModel, AbsenceOrderModel } = require('../../app');
+const { UserModel, DoctorDocumentModel, DoctorAccommodationModel, AbsenceOrderModel, DoctorMaterialOrderModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require('sequelize');
 
@@ -24,39 +24,38 @@ class User {
         this.type = data.type;
         this.manager_id = data.manager_id;
     }
-    static async getAllUsers(type) {
+    static async getAllUsers() {
         try {
-            let result;
-            if (type === "Doctor") {
-                result = await UserModel.findAll({
-                    where: {
-                        type: {
-                            [Op.eq]: type,
+            // let result;
+            // if (type === "Doctor") {
+            //     result = await UserModel.findAll({
+            //         where: {
+            //             type: {
+            //                 [Op.eq]: type,
 
-                        }
-                    },
-                    include: [{
-                        model: DoctorDocumentModel,
-                        as: 'doctor_documents',
-                    },
-                    {
-                        model: DoctorAccommodationModel,
-                        as: 'doctor_accommodations',
-                    }
-                    ]
+            //             }
+            //         },
+            //         include: [{
+            //             model: DoctorDocumentModel,
+            //             as: 'doctor_documents',
+            //         },
+            //         {
+            //             model: DoctorAccommodationModel,
+            //             as: 'doctor_accommodations',
+            //         }
+            //         ]
+            //     });
+            // }
+            // else {
+                let result = await UserModel.findAll({
+                    // where: {
+                    //     type: {
+                    //         [Op.eq]: type,
+                    //     }
+                    // }
                 });
-            }
-            else {
-                result = await UserModel.findAll({
-                    where: {
-                        type: {
-                            [Op.eq]: type,
-
-                        }
-                    }
-                });
-            }
-            console.log(result);
+            // }
+            // console.log(result);
             return {
                 data: result,
                 code: httpStatus.OK,
@@ -90,22 +89,30 @@ class User {
         }
     }
 
-    static async getOneUser(id, type) {
+    static async getOneUser(id) {
 
         try {
-            let result;
-            if (type === "Doctor") {
-                result = await UserModel.findByPk(id, {
-                    include: [
-                        {
-                            model: DoctorDocumentModel,
-                            as: 'doctor_documents',
-                        },
-                    ],
+            // let result;
+            let result = await UserModel.findByPk(id);
+            if (result.type == "Doctor") {
+                // result = await UserModel.findByPk(id, {
+                //     include: [
+                //         {
+                //             model: DoctorDocumentModel,
+                //             as: 'doctor_documents',
+                //         },
+                //     ],
+                // });
+                let documents = await DoctorDocumentModel.findAll({
+                    where: {
+                        doctor_id: id
+                    }
                 });
-            } else {
-                result = await UserModel.findByPk(id);
-            }
+                result.setDataValue('doctor_documents', documents);
+            } 
+            // else {
+            // let result = await UserModel.findByPk(id);
+            // }
 
 
             // token = result.generateToken();
@@ -389,4 +396,33 @@ class AbsenceOrder {
 }
 
 
-module.exports = { User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder };  
+class DoctorMaterialOrder {
+
+    constructor(data) {
+        this.doctor_id = data.doctor_id;
+        this.store_id = data.store_id;
+        this.quantity = data.quantity;
+    }
+
+    async addOrder() {
+
+        try {
+
+            const result = await DoctorMaterialOrderModel.create(this);
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+
+}
+
+
+module.exports = { User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder };  

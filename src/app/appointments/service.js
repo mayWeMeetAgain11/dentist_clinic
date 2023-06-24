@@ -231,39 +231,83 @@ class AppointmentReservation {
 		}
 	}
 
+    static async getAppointmentReservations(id) {
+		try {
+			const result = await AppointmentReservationModel.findOne({
+				where: {
+					appointment_id: id
+				},
+			});
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
 	// i should be carful with full empty days and the start working time if the first session is in the middle of the day
 	// i should open a socket for choosing the doctor
-	static async search(date, doctor_id, treatmentType) {
+	static async search(startDate, endDate, doctor_id, treatmentType, start, end) {
 		try {
 			let result;
 			let emptyDate = [];
-			if (date && doctor && treatmentType) {		
+			if (!(start && end)) {
+				return {
+					data: "you should enter start and end time of the working day",
+					code: httpStatus.BAD_REQUEST,
+				};
+			}
+			if (startDate && doctor && treatmentType) {
 				result = await AppointmentReservationModel.findAll({
 					where: {
-						start: {
-							[Op.gte]: date
-						}
+						[Op.or]: [
+							{
+								start: {
+									[Op.gte]: startDate
+								}
+							},
+							// {
+							// 	start: {
+							// 		[Op.between]: [startDate, endDate]
+							// 	}
+							// }
+						]
 					},
 					include: [
 						{
-							model: UserModel,
-							where: {
-								id: doctor_id,
-								type: treatmentType
-							}
+							model: AppointmentModel,
+							as: 'appointment',
+							include : [
+								{
+									model: UserModel,
+									as : 'doctor',
+									where: {
+										id: doctor_id,
+										type: treatmentType
+									}
+								}
+							]
 						}
-					]
+					],
+					order: [['start']],
 				});
-				for (let i = 0; i < result.length - 1; i++) {
-					end = result[i].end;
-					start = result[i+1].start;
-					if (end == start) {
-						continue;
-					}
-					else {
-						emptyDate.push({"start": end, "end": start - end});
-					}
-				}
+				// do not forget from the start time to first one, and from the last one to end time
+				// for (let i = 0; i < result.length - 1; i++) {
+				// 	end = result[i].end;
+				// 	start = result[i+1].start;
+				// 	if (end == start) {
+				// 		continue;
+				// 	}
+				// 	else {
+				// 		emptyDate.push({"start": end, "end": start - end});
+				// 	}
+				// }
 			}
             return {
                 data: result,

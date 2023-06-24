@@ -55,6 +55,17 @@ module.exports = {
             data: result.data,
         });
     },
+    
+    orderItem: async (req, res) => {
+        const data = req.body;
+        const {doctor_id} = req.params;
+        data.doctor_id = doctor_id;
+        //add the file path
+        const result = await new Store(data).order(data);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
 
 
 }

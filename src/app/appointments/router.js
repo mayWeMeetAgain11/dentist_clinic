@@ -9,6 +9,8 @@ const {
     getAllAppointmentReservations,
     updateAppointmentReservation,
     destroyAppointmentReservation,
+    getAllReservationForOneAppointment,
+    searchReservation,
 } = require('./handler');
 const router = require('express').Router();
 
@@ -38,6 +40,9 @@ router.delete('/reservation/:id', destroyAppointmentReservation);
 
 // somewhere between :)
 
+router.get('/reservation/:appointment_id', getAllReservationForOneAppointment);
+
+router.post('/reservation/search', searchReservation);
 
 
 module.exports = router;
