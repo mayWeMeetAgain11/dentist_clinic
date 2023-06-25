@@ -1,4 +1,5 @@
-const { Store, Category } = require('./service');
+const { Store, Category, StoreBill, StoreBillMaterial } = require('./service');
+const {sequelize} = require('../../../utils/database/config');
 
 
 module.exports = {
@@ -56,12 +57,48 @@ module.exports = {
         });
     },
     
-    orderItem: async (req, res) => {
+    // orderItem: async (req, res) => {
+    //     const data = req.body;
+    //     const {doctor_id} = req.params;
+    //     data.doctor_id = doctor_id;
+    //     const result = await new Store(data).order(data);
+    //     res.status(result.code).send({
+    //         data: result.data,
+    //     });
+    // },
+
+    addStoreBillWithMaterials: async (req, res) => {
+
         const data = req.body;
-        const {doctor_id} = req.params;
-        data.doctor_id = doctor_id;
-        //add the file path
-        const result = await new Store(data).order(data);
+        const files = req.files;
+
+        try{
+            const result = await sequelize.transaction(async (t) => {
+                const result1 = await StoreBillMaterial.addStoreBillMaterialWithAllChanges(data, files, { transaction: t });
+                // data.store_bill_id = result1.id;
+                // console.log("after first fun in t");
+                // const result2 = await new StoreBillMaterial(data).addStoreBillMaterial({ transaction: t });
+                // console.log("after second fun in t");
+                return { result1 };
+            });
+            // console.log("after retuurn two results");
+            res.status(result.result1.code).send({
+                data: result.result1.data,
+            });
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    },
+
+    getItemByName: async (req, res) => {
+
+        const {name} = req.body;
+
+        const result = await Store.searchItem(name);
         res.status(result.code).send({
             data: result.data,
         });

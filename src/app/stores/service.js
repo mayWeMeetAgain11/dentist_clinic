@@ -1,7 +1,8 @@
-const { StoreModel, CategoryModel } = require('../../app');
+const { StoreModel, CategoryModel, StoreBillModel, StoreBillMaterialModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const fs = require('fs');
-
+const result = require('sequelize');
+const Op = result.Op;
 
 class Store {
 
@@ -55,6 +56,34 @@ class Store {
             };
         }
     }
+
+    static async searchItem(name) {
+        try {
+
+            const result = await StoreModel.findAll({
+                include: {
+                    model: CategoryModel,
+                    as: "category"
+                },
+                where: {
+                    name: {
+                        [Op.substring]: name
+                    }
+                }
+            });
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+    
     static async getItemsByCategory(id) {
         try {
 
@@ -103,15 +132,11 @@ class Store {
     }
     
     static async order(data) {
-        console.log("in order");
         try {
 
-            console.log("in order");
             let result = await StoreModel.findByPk(data.store_id);
-            console.log(result);
             result.storage = result.storage - data.quantity;
             result.save();
-            console.log(result.storage);
             return {
                 data: result,
                 code: httpStatus.OK,
@@ -172,8 +197,147 @@ class Category {
         }
     }
 
+}
 
 
+class StoreBill {
+
+    constructor(data) {
+        this.total = data.total;
+    }
+
+    async addStoreBill() {
+
+        try {
+            const storeBill = await StoreBillModel.create(this);
+            return {
+                data: storeBill,
+                code: httpStatus.OK,
+            };
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+
+        }
+    }
+
+    static async getStoreBill() {
+
+        try {
+            const storeBills = await StoreBillModel.findAll({
+                include: [
+                    {
+                        model: StoreBillMaterialModel,
+                        as: "billMaterials"
+                    }
+                ]
+            });
+            return {
+                data: storeBills,
+                code: httpStatus.OK,
+            };
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+
+        }
+    }
 
 }
-module.exports = { Store, Category };
+
+
+class StoreBillMaterial {
+
+    constructor(data) {
+        this.quantity = data.quantity;
+        this.price = data.price;
+        this.store_id = data.store_id;
+        this.store_bill_id = data.store_bill_id;
+    }
+
+    async addStoreBillMaterial() {
+
+        try {
+            const storeBillMaterial = await StoreBillMaterialModel.create(this);
+            return {
+                data: storeBillMaterial,
+                code: httpStatus.OK,
+            };
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+
+        }
+    }
+
+    static async addStoreBillMaterialWithAllChanges(data, files) {
+
+        try {
+            materials = data.materials;
+            let iterate = 0;
+            materials.forEach(async material => {
+                if (material.id == null) {
+                    const file = files[iterate];
+                    iterate ++;
+                    const store = await new Store(material, file).addItems();
+                    material.store_id = store.id;
+                    // const storeBillMaterial = await new StoreBillMaterial(material).addStoreBillMaterial();
+                } else {
+                    // const storeBillMaterial = await new StoreBillMaterial(material).addStoreBillMaterial();
+                    const store = await Store.order(material);
+                }
+                const storeBill = await new StoreBill(material).addStoreBill();
+                material.store_bill_id = storeBill.id;
+                const storeBillMaterial = await new StoreBillMaterial(material).addStoreBillMaterial();
+            });
+            // const storeBillMaterial = await StoreBillMaterialModel.create(this);
+            return {
+                data: "added successfully",
+                code: httpStatus.OK,
+            };
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+
+        }
+    }
+
+    // here id in the params is for store_bill_id
+    static async getStoreBillMaterialForOneBill(id) {
+
+        try {
+            const storeBillMaterials = await StoreBillMaterialModel.findAll({
+                where: {
+                    store_bill_id: id
+                }
+            });
+            return {
+                data: storeBillMaterials,
+                code: httpStatus.OK,
+            };
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+
+        }
+    }
+
+}
+
+
+module.exports = { Store, Category, StoreBill, StoreBillMaterial };
