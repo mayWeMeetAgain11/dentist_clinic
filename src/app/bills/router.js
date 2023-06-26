@@ -1,8 +1,9 @@
 const router = require('express').Router();
-const { get } = require('./handler');
+const { get, addBill } = require('./handler');
 
 
 router.get('/get/:id', get);
+router.post('/add/:employee_id', addBill);
 
 
 

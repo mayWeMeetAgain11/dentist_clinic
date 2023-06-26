@@ -183,7 +183,7 @@ module.exports = {
             });
             console.log("after retuurn two results");
             res.status(result.result2.code).send({
-                data: result.result2.data,
+                data: "order added successfully",
             });
 
         } catch (error) {

@@ -13,6 +13,7 @@ class Store {
         this.price = data.price;
         this.limit = data.limit;
         this.photo = file.path;
+        this.category_id = data.category_id;
 
     }
 
@@ -28,6 +29,26 @@ class Store {
         }
         catch (error) {
             fs.unlinkSync(this.photo);
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+    static async increaseQuantity(data) {
+        try {
+
+            let result = await StoreModel.findByPk(data.store_id);
+            result.storage = result.storage + data.storage;
+            result.save();
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+
+        }
+        catch (error) {
             return {
                 data: error.message,
                 code: httpStatus.BAD_REQUEST,
@@ -279,27 +300,29 @@ class StoreBillMaterial {
         }
     }
 
-    static async addStoreBillMaterialWithAllChanges(data, files) {
+    static async addStoreBillMaterialWithAllChanges(data, images) {
 
         try {
-            materials = data.materials;
+            const materials = data.materials;
             let iterate = 0;
+            const storeBill = await new StoreBill(data).addStoreBill();
+            // console.log(storeBill.data.dataValues.id);
             materials.forEach(async material => {
                 if (material.id == null) {
-                    const file = files[iterate];
+                    // add validation if there is no photo
+                    const file = images[iterate];
                     iterate ++;
                     const store = await new Store(material, file).addItems();
-                    material.store_id = store.id;
-                    // const storeBillMaterial = await new StoreBillMaterial(material).addStoreBillMaterial();
+                    // material.store_id = store.getDataValue('id');
+                    material.store_id = store.data.dataValues.id;
                 } else {
-                    // const storeBillMaterial = await new StoreBillMaterial(material).addStoreBillMaterial();
-                    const store = await Store.order(material);
+                    const store = await Store.increaseQuantity(material);
+                    material.store_id = material.id;
                 }
-                const storeBill = await new StoreBill(material).addStoreBill();
-                material.store_bill_id = storeBill.id;
+                material.store_bill_id = storeBill.data.dataValues.id;
+                material.quantity = material.storage;
                 const storeBillMaterial = await new StoreBillMaterial(material).addStoreBillMaterial();
             });
-            // const storeBillMaterial = await StoreBillMaterialModel.create(this);
             return {
                 data: "added successfully",
                 code: httpStatus.OK,

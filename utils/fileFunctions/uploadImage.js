@@ -5,7 +5,8 @@ const fileStorage = multer.diskStorage({
         cb(null, 'public/images');
     },
     filename: (req, file, cb) => {  
-        cb(null, file.originalname);
+        // cb(null, file.originalname);
+        cb(null, Date.now() + "-" + file.originalname);
     }
 });
 const fileFilter = (req, file, cb) => {

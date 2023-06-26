@@ -7,7 +7,7 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/dentist/public',express.static(path.join(__dirname, 'public')));
 
 app.use('/dentist/patient',require('./src/app/patients/router'));
 app.use('/dentist/room',require('./src/app/rooms/router'));

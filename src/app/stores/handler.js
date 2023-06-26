@@ -70,11 +70,13 @@ module.exports = {
     addStoreBillWithMaterials: async (req, res) => {
 
         const data = req.body;
-        const files = req.files;
+        const images = req.files;
 
         try{
+            // console.log(data);
+            // console.log(images);
             const result = await sequelize.transaction(async (t) => {
-                const result1 = await StoreBillMaterial.addStoreBillMaterialWithAllChanges(data, files, { transaction: t });
+                const result1 = await StoreBillMaterial.addStoreBillMaterialWithAllChanges(data, images, { transaction: t });
                 // data.store_bill_id = result1.id;
                 // console.log("after first fun in t");
                 // const result2 = await new StoreBillMaterial(data).addStoreBillMaterial({ transaction: t });

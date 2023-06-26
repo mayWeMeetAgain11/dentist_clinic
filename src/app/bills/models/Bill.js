@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'tax_id',
                 as: 'tax',
             });
+            this.belongsTo(models.PayerModel, {
+                foreignKey: 'payer_id',
+                as: 'payer',
+            });
         }
     }
     BillModel.init({

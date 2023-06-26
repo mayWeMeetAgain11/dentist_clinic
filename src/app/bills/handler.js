@@ -11,5 +11,15 @@ module.exports = {
         });
     },
 
+    addBill: async (req, res) => {
+        const {employee_id} = req.params;
+        const data = req.body;
+        data.employee_id = employee_id;
+        const result = await new Bill(data).add();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
 
 }
