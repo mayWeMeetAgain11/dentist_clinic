@@ -36,8 +36,8 @@ module.exports = (sequelize, DataTypes) => {
             },
         },
         status: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false,
+            type: DataTypes.STRING,
+            defaultValue: "unpaid",
             allowNull: false,
         }
     }, {

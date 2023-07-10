@@ -70,6 +70,29 @@ class User {
 
     }
 
+    static async getAllManager() {
+        try {
+                let result = await UserModel.findAll({
+                    where: {
+                        type: {
+                            [Op.eq]: "Manager",
+                        }
+                    }
+                });
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
 
     async addUser() {
 

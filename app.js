@@ -3,6 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const { console, logger } = require('./utils/index');
 const { database } = require('./src/app');
+const { x } = require('joi');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -21,7 +22,9 @@ app.get('/dentist',(req,res)=>{
 })
 
 app.listen({ port: 3010 }, async () => {
-    // await database.sync();
-    await database.authenticate();
+    await database.sync();
+    // await database.authenticate();
     console.log('starting');
 });
+
+

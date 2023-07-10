@@ -1,6 +1,7 @@
-const { BillModel,AppointmentModel,AppointmentReservationModel, PatientModel, PayerModel } = require('../../app');
+const { BillModel,AppointmentModel,AppointmentReservationModel, PatientModel, PayerModel, TaxModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require("sequelize");
+const { Sequelize } = require('sequelize');
 
 
 class Bill {
@@ -15,11 +16,40 @@ class Bill {
         this.employee_id = data.employee_id;
         this.paient_id = data.paient_id;
         this.appointment_id = data.appointment_id;
+        this.payer_id = data.payer_id;
     }
 
+    // async addBill() {
+    //     try {
+    //         const result = await BillModel.create(this);
+    //         return {
+    //             data: result,
+    //             code: httpStatus.CREATED,
+    //         };
+    //     } catch (error) {
+    //         return {
+    //             data: error.message,
+    //             code: httpStatus.BAD_REQUEST,
+    //         };
+    //     }
+    // }
     async add() {
         try {
+            // const payer = await PayerModel.findOne({
+            //     where: {
+            //         first_name: data.first_name,
+            //         last_name: data.last_name,
+            //         phone: data.phone
+            //     }
+            // });
+            // if (payer) {
+            //     data.payer_id = payer.id;
+            // } else {
+            //     const newPayer = await new Payer(data).add();
+            //     data.payer_id = newPayer.id;
+            // }
             const result = await BillModel.create(this);
+            // const result = await BillModel.create(this);
             return {
                 data: result,
                 code: httpStatus.CREATED,
@@ -98,7 +128,106 @@ class Bill {
 
     }
 
+    static async getAllPatientsBills() {
+
+        try {
+
+            const patients = await PatientModel.findAll({
+                include: [
+                    {
+                        model: AppointmentModel,
+                        as: 'appointments',
+                        order: [['createdAt', 'ASC']],
+                        limit: 1
+                    }
+                ],
+            });
+            // for (let i = 0; i < patients.length; i++) {
+            //     // if (patients[i].appointments[0] == true) {
+            //         patients[i].setDataValue("status", appointments[0].status);
+            //         // patients[i].dataValues.status = "unfinished";
+            //     // } else {
+            //         // patients[i].dataValues.status = "unfinished";
+            //     //     patients[i].setDataValue("status", "unfinished");
+            //     // }
+            // }
+
+            return {
+                data: patients,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+
+    }
+
 
 }
 
-module.exports = {Bill};
+class Payer {
+
+    constructor (data) {
+        this.first_name = data.first_name;
+        this.last_name = data.last_name;
+        this.phone = data.phone;
+        this.address = data.address;
+    }
+
+    async add (data) {
+
+        try {
+
+            const result = await PayerModel.findOne({
+                where: {
+                    phone: data.phone
+                }
+            });
+            if (!result) {
+                result = await PayerModel.create(this);
+            }
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+}
+
+
+class Tax {
+
+    constructor (data) {
+        this.percent = data.percent;
+    }
+
+    async add () {
+
+        try {
+
+            result = await TaxModel.create(this);
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+}
+
+module.exports = {Bill, Payer, Tax};

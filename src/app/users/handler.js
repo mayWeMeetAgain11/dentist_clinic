@@ -46,6 +46,16 @@ module.exports = {
         });
     },
 
+    getAllManagers: async (req, res) => {
+        // const {type} = req.params;
+        // console.log(type);
+        //  const type = req.body;
+        const result = await User.getAllManager();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
 
     add: async (req, res) => {
         const data = req.body;
