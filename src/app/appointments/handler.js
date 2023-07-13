@@ -113,4 +113,12 @@ module.exports = {
         });
     },
 
+    getAllFutireReservation: async (req, res) => {
+        const {doctor_id} = req.params;
+        const result = await AppointmentReservation.getFutureReservation(doctor_id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
 }

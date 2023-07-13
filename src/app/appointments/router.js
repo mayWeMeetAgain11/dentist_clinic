@@ -11,6 +11,7 @@ const {
     destroyAppointmentReservation,
     getAllReservationForOneAppointment,
     searchReservation,
+    getAllFutireReservation
 } = require('./handler');
 const router = require('express').Router();
 
@@ -43,6 +44,8 @@ router.delete('/reservation/:id', destroyAppointmentReservation);
 router.get('/reservation/:appointment_id', getAllReservationForOneAppointment);
 
 router.post('/reservation/search', searchReservation);
+
+router.get('/future-reservation/:doctor_id', getAllFutireReservation);
 
 
 module.exports = router;

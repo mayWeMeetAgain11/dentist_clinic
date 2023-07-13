@@ -1,6 +1,6 @@
 // const { where } = require('sequelize');
 const { httpStatus, console } = require('../../../utils/index');
-const {AppointmentModel, AppointmentReservationModel} = require('../index');
+const {AppointmentModel, AppointmentReservationModel, PatientDocumentModel, PatientModel, UserModel, ChairModel} = require('../index');
 const {Op} = require('sequelize');
 
 class Appointment {
@@ -341,6 +341,57 @@ class AppointmentReservation {
 			}
             return {
                 data: result,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+	static async getFutureReservation(doctor_id) {
+		try {
+			const today = new Date();
+			const futureReservation = await AppointmentReservationModel.findAll({
+				where: {
+					start: {
+						[Op.gte]: today
+					}
+				},
+				include: [
+					{
+						model: ChairModel,
+						as: 'chair'
+					},{
+						model: AppointmentModel,
+						as: 'appointment',
+						include: [
+							{
+								model: UserModel,
+								as: "doctor",
+								where: {
+									id: doctor_id
+								}
+							},{
+								model: PatientModel,
+								as: 'patient',
+								include: [
+									{
+										model: PatientDocumentModel,
+										as: "patient_documents"
+									}
+								]
+							}
+						]
+					}
+				],
+				sort: [["startDate"]],
+			});
+            return {
+                data: futureReservation,
                 code: httpStatus.OK,
             };
 		} catch (error) {
