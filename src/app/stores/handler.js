@@ -76,6 +76,10 @@ module.exports = {
             // console.log(data);
             // console.log(images);
             const result = await sequelize.transaction(async (t) => {
+                
+                const storeBill = await new StoreBill(data).addStoreBill({ transaction: t });
+                data.store_bill_id = storeBill.data.dataValues.id;
+
                 const result1 = await StoreBillMaterial.addStoreBillMaterialWithAllChanges(data, images, { transaction: t });
                 // data.store_bill_id = result1.id;
                 // console.log("after first fun in t");
@@ -96,11 +100,52 @@ module.exports = {
         }
     },
 
+    
+    getAllBillsWithMaterials: async (req, res) => {
+        const result = await StoreBill.getAllBillsWithItsMaterials();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+    
+    getAllBillsWithoutMaterials: async (req, res) => {
+        const result = await StoreBill.getAllBillsWithoutItsMaterials();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+    
+    storeBillSearch: async (req, res) => {
+        // the number is the id of the bill, which is written in the bill paper
+        const {number} = req.body;
+        const result = await StoreBill.search(number);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    addStoreBill: async (req, res) => {
+        // the number is the id of the bill, which is written in the bill paper
+        const data = req.body;
+        const result = await new StoreBill(data).add();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
     getItemByName: async (req, res) => {
 
         const {name} = req.body;
 
         const result = await Store.searchItem(name);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    getUnderLimitItem: async (req, res) => {
+
+        const result = await Store.underLimit();
         res.status(result.code).send({
             data: result.data,
         });

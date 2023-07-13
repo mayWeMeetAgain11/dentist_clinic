@@ -1,4 +1,5 @@
 const  {Bill, Payer, Tax}  = require('./service');
+const  {Appointment}  = require('../appointments/service');
 
 
 module.exports = {
@@ -23,8 +24,12 @@ module.exports = {
         const data = req.body;
         // data.employee_id = employee_id;
         const payer = await new Payer(data).add(data);
-        data.payer_id = payer.id;
+        data.payer_id = payer.data.dataValues.id;
+        const currentTaxVar = await Tax.currentTax();
+        console.log(currentTaxVar);
+        data.tax_id = currentTaxVar.data.dataValues.id;
         const result = await new Bill(data).add();
+        const newAppointmentStatus = await Appointment.editStatus(result);
         res.status(result.code).send({
             data: result.data,
         });

@@ -2,6 +2,7 @@ const { BillModel,AppointmentModel,AppointmentReservationModel, PatientModel, Pa
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require("sequelize");
 const { Sequelize } = require('sequelize');
+const { StoreBill } = require('../stores/service');
 
 
 class Bill {
@@ -14,7 +15,7 @@ class Bill {
         this.status = data.status;
         this.tax_id = data.tax_id;
         this.employee_id = data.employee_id;
-        this.paient_id = data.paient_id;
+        // this.paient_id = data.paient_id;
         this.appointment_id = data.appointment_id;
         this.payer_id = data.payer_id;
     }
@@ -135,6 +136,7 @@ class Bill {
             const patients = await PatientModel.findAll({
                 include: [
                     {
+                        required: true,
                         model: AppointmentModel,
                         as: 'appointments',
                         order: [['createdAt', 'ASC']],
@@ -165,7 +167,6 @@ class Bill {
         }
 
     }
-
 
 }
 
@@ -215,7 +216,32 @@ class Tax {
 
         try {
 
-            result = await TaxModel.create(this);
+            const result = await TaxModel.create(this);
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+    static async currentTax () {
+
+        try {
+
+            const result = await TaxModel.findOne({
+                order: [["created_at", "DESC"]],
+                limit: 1
+            });
+
+            console.log("result");
+            console.log(result);
+
             return {
                 data: result,
                 code: httpStatus.CREATED,

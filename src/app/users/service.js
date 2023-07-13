@@ -346,6 +346,34 @@ class DoctorDocumentAccommodation {
 
     }
 
+    static async getAllDocumentAccommodationCloseToEnd() {
+
+        try {
+
+            const thirtyDaysFromNow = new Date();
+            thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+
+            const result = await DoctorAccommodationModel.findAll({
+                where: {
+                    end_date: {
+                        [Op.lte]: thirtyDaysFromNow
+                    }
+                }
+            });
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
     async addDocumentAccommodation() {
 
         try {
@@ -405,6 +433,36 @@ class AbsenceOrder {
             const result = await AbsenceOrderModel.create(this);
             return {
                 data: result,
+                code: httpStatus.CREATED,
+            };
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+    }
+
+    static async absenceOrderReplyService(data) {
+
+        try {
+            let resultMessage = "";
+            const result = await AbsenceOrderModel.findOne({
+                where: {
+                    user_id: data.user_id
+                }
+            });
+            // console.log(result);
+            result.accepted = data.accepted;
+            result.save();
+            if (result.accepted === true) {
+                resultMessage = "absence order accepted successfully";
+            } else {
+                resultMessage = "absence order rejected successfully";
+            }
+            
+            return {
+                data: resultMessage,
                 code: httpStatus.CREATED,
             };
         } catch (error) {

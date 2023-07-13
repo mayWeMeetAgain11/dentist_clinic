@@ -130,6 +130,15 @@ module.exports = {
 
     // doctor aaccommodation document
 
+    checkAllDocumentAccommodation: async (req, res) => {
+
+        const result = await DoctorDocumentAccommodation.getAllDocumentAccommodationCloseToEnd();
+        
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
     getAllDocumentAccommodation: async (req, res) => {
 
         const {id} = req.params;
@@ -166,6 +175,16 @@ module.exports = {
         console.log(req.body);
         const data = req.body;
         const result = await new AbsenceOrder(data).addAbsenceOrder();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    absenceOrderReply: async (req, res) => {
+        const data = req.body;
+        const {user_id} = req.params;
+        data.user_id = user_id;
+        const result = await AbsenceOrder.absenceOrderReplyService(data);
         res.status(result.code).send({
             data: result.data,
         });

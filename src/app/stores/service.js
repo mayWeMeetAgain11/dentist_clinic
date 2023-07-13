@@ -3,6 +3,8 @@ const httpStatus = require('../../../utils/constants/httpStatus');
 const fs = require('fs');
 const result = require('sequelize');
 const Op = result.Op;
+const {sequelize} = require('../../../utils/database/config');
+const { log } = require('console');
 
 class Store {
 
@@ -89,6 +91,29 @@ class Store {
                 where: {
                     name: {
                         [Op.substring]: name
+                    }
+                }
+            });
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+    static async underLimit() {
+        try {
+
+            const result = await StoreModel.findAll({
+                where: {
+                    limit: {
+                        [Op.gte]: sequelize.col("storage")
                     }
                 }
             });
@@ -270,6 +295,147 @@ class StoreBill {
         }
     }
 
+    static async getAllBillsWithItsMaterials() {
+
+        try {
+
+            const storeBills = await StoreBillModel.findAll({
+                include: [
+                    {
+                        required: true,
+                        model: StoreBillMaterialModel,
+                        as: 'billMaterials',
+                        include: [
+                            {
+                                model: StoreModel,
+                                as: 'store',
+                                include: [
+                                    {
+                                        model: CategoryModel,
+                                        as: 'category'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+            });
+
+            return {
+                data: storeBills,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+
+    }
+
+    static async getAllBillsWithoutItsMaterials() {
+
+        try {
+
+            const storeBills = await StoreBillModel.findAll({
+                include: [
+                    {
+                        required: false,
+                        model: StoreBillMaterialModel,
+                        as: 'billMaterials',
+                    }
+                ],
+            });
+
+            // const newStoreBills = [];
+            // for (let i = 0; i < storeBills.length; i++) {
+            //     if (storeBills[i].billMaterials.length == 0) {
+            //         delete storeBills[i].billMaterials;
+            //         newStoreBills.push(storeBills[i]);
+            //     }
+            // }
+            // const newStoreBills = [];
+            // for (let i = 0; i < storeBills.length; i++) {
+            //     if (storeBills[i].billMaterials.length === 0) {
+            //         const updatedBill = storeBills[i];
+            //         delete updatedBill.billMaterials;
+            //         newStoreBills.push(updatedBill);
+            //     }
+            // }
+            const newStoreBills = await StoreBillModel.findAll({
+                attributes: ['*', result.fn()],
+                where: {
+                    count: {
+                        [Op.gt]: 0
+                    }
+                },
+                include: [
+                    {
+                        model: StoreBillMaterialModel,
+                        as: 'billMaterials',
+                        required: false
+                    }
+                ]
+            });
+
+            return {
+                data: newStoreBills,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+
+    }
+
+    static async search(number) {
+
+        try {
+
+            const newStoreBill = await StoreBillModel.findByPk(number);
+
+            return {
+                data: newStoreBill,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+
+    }
+
+    async add() {
+
+        try {
+
+            const newStoreBill = await StoreBillModel.create(this);
+
+            return {
+                data: newStoreBill,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+
+    }
+
+
+
 }
 
 
@@ -311,6 +477,7 @@ class StoreBillMaterial {
                 if (material.id == null) {
                     // add validation if there is no photo
                     const file = images[iterate];
+                    console.log(file);
                     iterate ++;
                     const store = await new Store(material, file).addItems();
                     // material.store_id = store.getDataValue('id');
@@ -359,6 +526,68 @@ class StoreBillMaterial {
 
         }
     }
+    static async addStoreBillMaterialWithAllChanges(data, images) {
+
+        try {
+            const materials = data.materials;
+            let imageIterator = 0;
+
+            materials.forEach(async material => {
+                if (material.category.id == null) {
+                    // add validation if there is no photo
+                    const file = images[imageIterator];
+                    // console.log(file);
+                    imageIterator ++;
+                    const category = await new Category(data).addCategory();
+                    // if ()
+                    ////////////////////////////////////////////////////////////////////////////
+                        const store = await new Store(material, file).addItems();
+                    // material.store_id = store.getDataValue('id');
+                    material.store_id = store.data.dataValues.id;
+                } else {
+                    const store = await Store.increaseQuantity(material);
+                    material.store_id = material.id;
+                }
+                material.store_bill_id = storeBill.data.dataValues.id;
+                material.quantity = material.storage;
+                const storeBillMaterial = await new StoreBillMaterial(material).addStoreBillMaterial();
+            });
+            return {
+                data: "added successfully",
+                code: httpStatus.OK,
+            };
+        }
+        catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+
+        }
+    }
+
+    // // here id in the params is for store_bill_id
+    // static async getStoreBillMaterialForOneBill(id) {
+
+    //     try {
+    //         const storeBillMaterials = await StoreBillMaterialModel.findAll({
+    //             where: {
+    //                 store_bill_id: id
+    //             }
+    //         });
+    //         return {
+    //             data: storeBillMaterials,
+    //             code: httpStatus.OK,
+    //         };
+    //     }
+    //     catch (error) {
+    //         return {
+    //             data: error.message,
+    //             code: httpStatus.BAD_REQUEST,
+    //         };
+
+    //     }
+    // }
 
 }
 

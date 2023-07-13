@@ -52,6 +52,36 @@ class Appointment {
 		}
 	}
 
+	static async editStatus(result) {
+		try {
+			// console.log(result);
+			let status = "still paying";
+			const paid = result.data.dataValues.paid;
+			const total = result.data.dataValues.total;
+			const appointment_id = result.data.dataValues.appointment_id;
+
+			if (paid === total) {
+				status = "paid";
+			}
+
+			const appointment = await AppointmentModel.findByPk(appointment_id);
+			appointment.status = status;
+			appointment.save();
+			// console.log();
+			return {
+				data: 'updated',
+				code: httpStatus.UPDATED,
+			};
+			
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
 	static async delete(id) {
 		try {
 			const result = await AppointmentModel.destroy({
