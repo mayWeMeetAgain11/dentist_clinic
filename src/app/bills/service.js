@@ -183,22 +183,22 @@ class Bill {
                         as: 'appointments',
                         order: [['createdAt', 'ASC']],
                         limit: 1,
-                        include: [
-                            {
-                                model: UserModel,
-                                as: "doctor",
-                                attributes: [
-                                    'first_name',
-                                    'last_name',
-                                    'phone',
-                                    'city',
-                                    'region',
-                                    'street',
-                                    'near_by',
-                                    'gender'
-                                ]
-                            }
-                        ]
+                        // include: [
+                        //     {
+                        //         model: UserModel,
+                        //         as: "doctor",
+                        //         attributes: [
+                        //             'first_name',
+                        //             'last_name',
+                        //             'phone',
+                        //             'city',
+                        //             'region',
+                        //             'street',
+                        //             'near_by',
+                        //             'gender'
+                        //         ]
+                        //     }
+                        // ]
                     }
                 ],
             });
