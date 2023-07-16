@@ -49,7 +49,7 @@ module.exports = {
 
     addAppointmentReservation: async (req, res) => {
         const data = req.body;
-
+console.log("hellllo");
         const result = await new AppointmentReservation(data).add();
         res.status(result.code).send({
             data: result.data,

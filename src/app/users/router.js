@@ -1,6 +1,7 @@
 const { destroy, add, getOne, getAll, update , loginHandler,  
     getAllDocument, addDocument,getAllDocumentAccommodation , addDocumentAccommodation, 
-    getAllAbsenceOrders, addAbsenceOrder, addDoctorOrder, getAllManagers, absenceOrderReply, checkAllDocumentAccommodation
+    getAllAbsenceOrders, addAbsenceOrder, addDoctorOrder, getAllManagers, absenceOrderReply, checkAllDocumentAccommodation,
+    addCancelReservation, deleteAppointmentReservation, getAllDoctors
 } = require('./handler');
 const router = require('express').Router();
 const upload = require('../../../utils/fileFunctions/file_pdf').upload;
@@ -13,7 +14,7 @@ router.get('/getall/', getAll);
 router.get('/get/:id', getOne);
 router.put('/update/:id', update);
 router.delete('/delete/:id', destroy);
-
+router.get('/doctors/getall', getAllDoctors);
 
 //doctor document
 router.get('/doctorDocument/:id', getAllDocument);
@@ -32,6 +33,9 @@ router.post('/createAbsenceOrder', addAbsenceOrder);
 // doctor material order
 router.post('/order/add/:doctor_id', addDoctorOrder);
 
+// doctor cancel reservationn
+router.post('/cancel-reservation', addCancelReservation);
+router.post('/cancel-reservation/delete-reservation/:employee_id', deleteAppointmentReservation);
 
 
 module.exports = router;

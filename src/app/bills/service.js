@@ -1,4 +1,4 @@
-const { BillModel,AppointmentModel,AppointmentReservationModel, PatientModel, PayerModel, TaxModel } = require('../../app');
+const { BillModel,AppointmentModel,AppointmentReservationModel, PatientModel, PayerModel, TaxModel, UserModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require("sequelize");
 const { Sequelize } = require('sequelize');
@@ -67,33 +67,73 @@ class Bill {
         // id is paient id
 
         try {
-            const appointment = await AppointmentModel.findOne({
+            const appointments = await AppointmentModel.findAll({
                 where: {
                     patient_id: id,
                     status: {
-                        [Op.ne]: true
-                    }
+                        [Op.ne]: "paid"
+                    },
                 },
-                attributes: ['id'],
+                attributes: ['id', 'title'],
+                include: [
+                    {
+                        model: AppointmentReservationModel,
+                        as: 'appointment_reservations',
+                        attributes: ['cost', 'comment', 'start'],
+                    },
+                    {
+                        model: BillModel,
+                        as: 'bills',
+                    },
+                    {
+                        model: UserModel,
+                        as: 'doctor',
+                        attributes: [
+                            'id',
+                            'first_name',
+                            'last_name',
+                            'phone',
+                            'city',
+                            'region',
+                            'street',
+                            'near_by',
+                            'gender',
+                            'birthdate'
+                        ]
+                    }
+                ]
             });
             // console.log(appointment);
             const patient = await PatientModel.findByPk(id);
 
-            const appointmentReservation1 = await AppointmentReservationModel.findAll({
-                where: {
-                    appointment_id: appointment.id,
-                },
-                attributes: ['cost', 'comment', 'start'],
-            });
-
-            const totalReservationCost = await appointmentReservation1.reduce((acc, curr) => acc + curr.cost, 0);
+            // const appointmentReservation1 = await AppointmentReservationModel.findAll({
+            //     where: {
+            //         appointment_id: appointment.id,
+            //     },
+            //     attributes: ['cost', 'comment', 'start'],
+            // });
+            let totalReservationCost = 0;
+            let ids =[];
+            let sumtTalReservationCost = 0;
+            for (let i = 0; i < appointments.length; i++) {
+                totalReservationCost = await appointments[i].appointment_reservations.reduce((acc, curr) => acc + curr.cost, 0);
+                ids.push(appointments[i].id);
+                const totalPaid = await appointments[i].bills.reduce((acc, curr) => acc + curr.paid, 0);
+                appointments[i].setDataValue("paid", totalPaid);
+                appointments[i].setDataValue("total", totalReservationCost);
+                sumtTalReservationCost += totalReservationCost;
+            }
+            
+            // const totalReservationCost = await appointmentReservation1.reduce((acc, curr) => acc + curr.cost, 0);
 
             const bill = await BillModel.findAll({
                 where: {
-                    appointment_id: appointment.id,
-                    status: {
-                        [Op.ne]: 'done'
-                    }
+                    appointment_id: {
+                        [Op.in]: ids
+                    },
+                    // status: {
+                    //     [Op.ne]: 'done'
+                    // }
                 },
                 attributes: ['total', 'paid'],
                 include: [
@@ -107,12 +147,14 @@ class Bill {
             // const payer = await PayerModel.findByPk(bill.payer_id);
             const totalPaid = await bill.reduce((acc, curr) => acc + curr.paid, 0);
 
+            // total for all his appointments
             const result = {
                 patient: patient,
-                appointment_details: appointmentReservation1,
-                total: totalReservationCost,
+                appointment_details: appointments,
+                total: sumtTalReservationCost,
                 paid: totalPaid,
-                bill: bill
+                // bill: bill,
+                rest: sumtTalReservationCost - totalPaid
             }
 
             return {
@@ -140,7 +182,23 @@ class Bill {
                         model: AppointmentModel,
                         as: 'appointments',
                         order: [['createdAt', 'ASC']],
-                        limit: 1
+                        limit: 1,
+                        include: [
+                            {
+                                model: UserModel,
+                                as: "doctor",
+                                attributes: [
+                                    'first_name',
+                                    'last_name',
+                                    'phone',
+                                    'city',
+                                    'region',
+                                    'street',
+                                    'near_by',
+                                    'gender'
+                                ]
+                            }
+                        ]
                     }
                 ],
             });

@@ -26,6 +26,13 @@ module.exports = {
             data: result.data,
         });
     },
+    getAllForOneDoctor: async (req, res) => {
+        const {doctor_id} = req.params;
+        const result = await Patient.getAllPatientsForOneDoctor(doctor_id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
     update: async (req, res) => {
         const id = req.params.id;
         const data = req.body;
@@ -42,8 +49,9 @@ module.exports = {
         });
     },
     addDocument : async (req,res)=>{
-
+        const file = req.file;
         const data = req.body;
+        data.file = file;
 
         const result = await new PatientDocument(data).addDocument();
         res.status(result.code).send({

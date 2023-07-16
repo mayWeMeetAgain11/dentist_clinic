@@ -30,7 +30,7 @@ class Store {
 
         }
         catch (error) {
-            fs.unlinkSync(this.photo);
+            // fs.unlinkSync(this.photo);
             return {
                 data: error.message,
                 code: httpStatus.BAD_REQUEST,
@@ -453,7 +453,7 @@ class StoreBillMaterial {
         try {
             const storeBillMaterial = await StoreBillMaterialModel.create(this);
             return {
-                data: storeBillMaterial,
+                data: "material added successfully",
                 code: httpStatus.OK,
             };
         }

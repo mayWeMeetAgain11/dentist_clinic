@@ -2,7 +2,7 @@
 const {Model} = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class AppointmentReservationModel extends Model {
+    class DoctorCancelReservationModel extends Model {
 
         // customValidation(days) {
         //     const today = new Date();
@@ -13,28 +13,23 @@ module.exports = (sequelize, DataTypes) => {
         // }
 
         static associate(models) {
-            this.belongsTo(models.AppointmentModel, {
-                foreignKey: 'appointment_id',
-                as: 'appointment',
-            });
-            this.belongsTo(models.ChairModel, {
+            this.belongsTo(models.UserModel, {
                 foreignKey: {
-                    name: 'chair_id',
-                    // allowNull: false,
+                    name: 'employee_id',
+                    allowNull: true,
                 },
-                as: 'chair',
+                as: 'employee',
+                // the id of the reception employee
             });
-            this.hasMany(models.DoctorMaterialOrderModel, {
-                foreignKey: 'appointment_reservation_id',
-                as: 'doctor_material_orders',
-            });
-            this.hasMany(models.DoctorCancelReservationModel, {
-                foreignKey: 'appointment_reservation_id',
-                as: 'doctor_cancel_reservations',
+            this.belongsTo(models.AppointmentReservationModel, {
+                foreignKey: {
+                    name: 'appointment_reservation_id',
+                },
+                as: 'appointmentreservation',
             });
         }
     }
-    AppointmentReservationModel.init({
+    DoctorCancelReservationModel.init({
         cost: {
             type: DataTypes.INTEGER,
             allowNull: true,
@@ -130,11 +125,15 @@ module.exports = (sequelize, DataTypes) => {
                 matches: /^[a-zA-Z0-9\s\\.,!?"'-]*$/,
             },
         },
+        status: {
+            type: DataTypes.STRING,
+            defaultValue: ""
+        },
     },{
         sequelize,
-        modelName: 'AppointmentReservationModel',
-        tableName: 'appointment_reservations',
+        modelName: 'DoctorCancelReservationModel',
+        tableName: 'doctor_cancel_reservations',
         underscored: true,
     });
-    return AppointmentReservationModel;
+    return DoctorCancelReservationModel;
 };

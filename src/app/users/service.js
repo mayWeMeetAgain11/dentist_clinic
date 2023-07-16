@@ -1,4 +1,4 @@
-const { UserModel, DoctorDocumentModel, DoctorAccommodationModel, AbsenceOrderModel, DoctorMaterialOrderModel } = require('../../app');
+const { UserModel, DoctorDocumentModel, DoctorAccommodationModel, AbsenceOrderModel, DoctorMaterialOrderModel, DoctorCancelReservationModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require('sequelize');
 
@@ -76,6 +76,29 @@ class User {
                     where: {
                         type: {
                             [Op.eq]: "Manager",
+                        }
+                    }
+                });
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
+    static async getDoctors() {
+        try {
+                let result = await UserModel.findAll({
+                    where: {
+                        type: {
+                            [Op.eq]: "Doctor",
                         }
                     }
                 });
@@ -506,4 +529,94 @@ class DoctorMaterialOrder {
 }
 
 
-module.exports = { User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder };  
+class DoctorCancelReservation {
+
+	constructor(data) {
+		this.cost = data.cost;
+		this.start = data.start;
+		this.end = data.end;
+		this.done = data.done;
+		this.comment = data.comment;
+		this.appointment_id = data.appointment_id;
+		this.chair_id = data.chair_id;
+		this.employee_id = data.employee_id;
+		this.appointment_reservation_id = data.appointment_reservation_id;
+		
+	}
+
+    // this.doctor_id = data.doctor_id;
+
+    async add() {
+
+        try {
+
+            const result = await DoctorCancelReservationModel.create(this);
+            console.log(result);
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+    static async update(data) {
+        // to add employee_id
+
+        try {
+
+            const doctorCancelReservation = await DoctorCancelReservationModel.findOne({
+				where: {
+					id: id
+				},
+			});
+
+            doctorCancelReservation.employee_id = data.employee_id;
+            doctorCancelReservation.save();
+
+            // const result = await DoctorCancelReservationModel.update(this, {
+            //     where: {
+            //         id: id
+            //     }
+            // });
+            return {
+                data: doctorCancelReservation,
+                code: httpStatus.CREATED,
+            };
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+    static async get(id) {
+		try {
+			const result = await DoctorCancelReservationModel.findOne({
+				where: {
+					id: id
+				},
+			});   
+			return {
+				data: result,
+				code: httpStatus.UPDATED,
+			};
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
+
+}
+
+
+module.exports = { User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder, DoctorCancelReservation };  

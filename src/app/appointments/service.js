@@ -60,11 +60,16 @@ class Appointment {
 			const total = result.data.dataValues.total;
 			const appointment_id = result.data.dataValues.appointment_id;
 
-			if (paid === total) {
+			// if (paid === total) {
+			// 	status = "paid";
+			// }
+
+			const appointment = await AppointmentModel.findByPk(appointment_id);
+
+			if (paid === total && appointment.finished === true) {
 				status = "paid";
 			}
 
-			const appointment = await AppointmentModel.findByPk(appointment_id);
 			appointment.status = status;
 			appointment.save();
 			// console.log();
@@ -283,64 +288,90 @@ class AppointmentReservation {
 
 	// i should be carful with full empty days and the start working time if the first session is in the middle of the day
 	// i should open a socket for choosing the doctor
+
+	// if the doctor does not has appointmnet reservation or reservatoin //important ///////////////////////////////////////////////////
+	// add between condition to appointment reservation //important ///////////////////////////////////////////////////
 	static async search(startDate, endDate, doctor_id, treatmentType, start, end) {
 		try {
-			let result;
-			let emptyDate = [];
-			if (!(start && end)) {
-				return {
-					data: "you should enter start and end time of the working day",
-					code: httpStatus.BAD_REQUEST,
-				};
-			}
-			if (startDate && doctor && treatmentType) {
-				result = await AppointmentReservationModel.findAll({
-					where: {
-						[Op.or]: [
-							{
-								start: {
-									[Op.gte]: startDate
-								}
-							},
-							// {
-							// 	start: {
-							// 		[Op.between]: [startDate, endDate]
-							// 	}
-							// }
-						]
-					},
-					include: [
-						{
-							model: AppointmentModel,
-							as: 'appointment',
-							include : [
-								{
-									model: UserModel,
-									as : 'doctor',
-									where: {
-										id: doctor_id,
-										type: treatmentType
-									}
-								}
-							]
+
+			let startDateObj = new Date(startDate);
+			let endDateObj = new Date(endDate);
+			// let result = [];
+			const doctors = await UserModel.findAll({
+				// where: {
+				// 	type: "Doctor"
+				// },
+				// include: [
+				// 	{
+				// 		required: true,
+				// 		model: AppointmentModel,
+				// 		as: 'doctor_appointments',
+				// 		include: [
+				// 			{
+				// 				required: true,
+				// 				model: AppointmentReservationModel,
+				// 				as: 'appointment_reservations',
+				// 				include: [
+				// 					{
+				// 						model: ChairModel,
+				// 						as: 'chair'
+				// 					}
+				// 				]
+				// 			}
+				// 		]
+				// 	}
+				// ]
+			});
+			console.log("doctors");
+			console.log(doctors);
+
+			// chairs have no reservations
+			const chairs = await ChairModel.findAll({
+				include: [
+					{
+						required: true,
+						model: AppointmentReservationModel,
+						as: 'appointment_reservations',
+					}
+				]
+			});
+
+			console.log(chairs);
+
+			let emptyDates = [];
+			let doctorEmptyDates = [];
+			let date = {};
+			let doctor = {};
+			let chair_ids = [];
+			let chairsDates = [];
+			// let temp = 0;
+			// let appointments;
+			// let reservation;
+			while (startDateObj.getDay() <= endDateObj.getDay()) {
+				for (let i = 0; i < doctors[i].length; i++) {
+					for (let j = 0; j < doctors[i].appointments.length; j++) {
+						const result = doctors[i].appointments[j].appointment_reservations.filter(obj => obj.start.getDay() === startDateObj.getDay());
+						doctors[i].appointments[j].appointment_reservations.push({start: start, end: end});
+						doctors[i].appointments[j].appointment_reservations.sort((a, b) => a.start - b.start);
+						for (let k = 0; k < doctors[i].appointments[j].appointment_reservations.length; k++) {
+							if ((doctors[i].appointments[j].appointment_reservations[k + 1].start.getTime() - doctors[i].appointments[j].appointment_reservations[k].end.getTime() ) > 0) {
+								date.start = doctors[i].appointments[j].appointment_reservations[k].end;
+								date.end = doctors[i].appointments[j].appointment_reservations[k + 1].start;
+								doctorEmptyDates.push(date);
+							}
 						}
-					],
-					order: [['start']],
-				});
-				// do not forget from the start time to first one, and from the last one to end time
-				// for (let i = 0; i < result.length - 1; i++) {
-				// 	end = result[i].end;
-				// 	start = result[i+1].start;
-				// 	if (end == start) {
-				// 		continue;
-				// 	}
-				// 	else {
-				// 		emptyDate.push({"start": end, "end": start - end});
-				// 	}
-				// }
+					}
+					doctor.doctor_info = doctors[i];
+					doctor.doctorEmptyDates = doctorEmptyDates;
+					emptyDates.push(doctor);
+					doctorEmptyDates = [];
+					doctor = {};
+				}
+				startDateObj.setDate(startDateObj.getDay() + 1);
 			}
+			
             return {
-                data: result,
+                data: doctors,
                 code: httpStatus.OK,
             };
 		} catch (error) {

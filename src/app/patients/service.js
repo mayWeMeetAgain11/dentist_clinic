@@ -1,5 +1,6 @@
-const { PatientModel, PatientDocumentModel } = require('../../app');
+const { PatientModel, PatientDocumentModel, AppointmentModel, UserModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
+const { Appointment } = require('../appointments/service');
 
 
 class Patient {
@@ -75,6 +76,51 @@ class Patient {
         }
 
     }
+
+    static async getAllPatientsForOneDoctor(doctor_id) {
+
+        try {
+
+            const today = new Date();
+
+            const result = await PatientModel.findAll({
+                include: [
+                    {
+                        attributes: [],
+                        model: AppointmentModel,
+                        as: "appointments",
+                        include: [
+                            {
+                                model: UserModel,
+                                as: "doctor",
+                                where: {
+                                    id: doctor_id
+                                }
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            for (let i = 0; i < result.length; i++) {
+                result[i].age = today.getFullYear() - result[i].birthdate.getFullYear();
+                result[i].setDataValue("age", result[i].age)
+            }
+
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
     async update(id) {
         try {
             const result = await PatientModel.update(
@@ -138,7 +184,7 @@ class Patient {
 class PatientDocument {
 
     constructor(data) {
-        this.document = data.document;
+        this.document = data.file.path;
         this.comment = data.comment;
         this.archived = data.archived;
         this.patient_id = data.patient_id;

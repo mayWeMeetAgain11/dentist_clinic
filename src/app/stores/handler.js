@@ -9,9 +9,26 @@ module.exports = {
         const data = req.body;
         const file = req.file;
 
-        const result = await new Store(data,file).addItems();
-        res.status(result.code).send({
-            data: result.data,
+        console.log("before transaction");
+
+        const result = await sequelize.transaction(async (t) => {
+            console.log("in transaction");
+            // check if he send me store_id to edit the item and just add it to related table or add new item
+            if (data.store_id == null) {
+                const result1 = await new Store(data,file).addItems({transaction: t});
+                data.store_id = result1.data.dataValues.id;
+                console.log("result1" + result1);
+            } else {
+                const editMaterialInfo = await Store.increaseQuantity(data, {transaction: t});
+            }
+            const storeBillMaterial = await new StoreBillMaterial(data).addStoreBillMaterial({transaction: t});
+
+            return { storeBillMaterial };
+        });
+        console.log("after transaction");
+        
+        res.status(result.storeBillMaterial.code).send({
+            data: result.storeBillMaterial.data,
         });
     },
 

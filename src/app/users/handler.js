@@ -1,9 +1,11 @@
 const multer = require('multer');
 const doctordocument = require('./models/doctordocument');
-const {User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder} = require('./service');
+const {User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder, DoctorCancelReservation} = require('./service');
 const {Store} = require('../stores/service');
 const {sequelize} = require('../../../utils/database/config');
 const httpStatus = require('../../../utils/constants/httpStatus');
+const { AppointmentReservation } = require('../appointments/service');
+// const { AppointmentReservation } = require('../');
 
 
 
@@ -75,7 +77,12 @@ module.exports = {
             data: result.data ,
         });
     },
-
+    getAllDoctors: async (req, res) => {
+        const result = await User.getDoctors();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
     
     update: async (req, res) => {
         const id = req.params.id;
@@ -193,8 +200,8 @@ module.exports = {
 
     // maybe the transaction faild because i do not have any id like this in data
 
-    addDoctorOrder: async (req, res) => {
-
+    addDoctorOrder: async (req, res) => {   
+        
         const data = req.body;
         const {doctor_id} = req.params;
         // data.setDataValue('doctor_id', doctor_id);
@@ -213,6 +220,63 @@ module.exports = {
             console.log("after retuurn two results");
             res.status(result.result2.code).send({
                 data: "order added successfully",
+            });
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    },
+
+    addCancelReservation: async (req, res) => {
+        // just appointment reservation id
+        const data = req.body;
+        // const {doctor_id} = req.params;
+        // data.doctor_id = doctor_id;
+
+        try{
+            // const appointmentReservation = await AppointmentReservation.get(data.appointment_reservation_id);
+            // console.log(appointmentReservation);
+            // data.cost = appointmentReservation.data.dataValues.cost;
+            // data.start = appointmentReservation.data.dataValues.start;
+            // data.end = appointmentReservation.data.dataValues.end;
+            // data.end = appointmentReservation.data.dataValues.end;
+            // console.log(appointmentReservation.data.dataValues);
+            // appointmentReservation.data.dataValues.setDataValues("appointment_reservation_id", data.appointment_reservation_id);
+            // console.log(appointmentReservation.data.dataValues);
+            const result = await new DoctorCancelReservation(data).add();
+            res.status(result.code).send({
+                data: result.data,
+            });
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    },
+
+    deleteAppointmentReservation: async (req, res) => {
+        const {employee_id} = req.params;
+        // just cancel_reservation_id
+        const data = req.body;
+        data.employee_id = employee_id;
+
+        try{
+            const doctorCancelReservation = await DoctorCancelReservation.get(data.cancel_reservation_id);
+            // console.log(doctorCancelReservation.data.dataValues.appointment_reservation_id);
+            const appointmentReservation = await AppointmentReservation.get(doctorCancelReservation.data.dataValues.appointment_reservation_id);
+            // console.log(appointmentReservation);
+            const deletedAppointmentReservation = await AppointmentReservation.delete(doctorCancelReservation.data.dataValues.appointment_reservation_id)
+            const result = await DoctorCancelReservation.update(data);
+
+            res.status(result.code).send({
+                data: "the session has deleted successfully",
             });
 
         } catch (error) {

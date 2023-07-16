@@ -21,12 +21,13 @@ module.exports = {
 
     addBill: async (req, res) => {
         // const {employee_id} = req.params;
+        // here send rest from get patient bill api then send it as total and send what the paient has payed and employee_id//////// important
         const data = req.body;
         // data.employee_id = employee_id;
         const payer = await new Payer(data).add(data);
         data.payer_id = payer.data.dataValues.id;
         const currentTaxVar = await Tax.currentTax();
-        console.log(currentTaxVar);
+        // console.log(currentTaxVar);
         data.tax_id = currentTaxVar.data.dataValues.id;
         const result = await new Bill(data).add();
         const newAppointmentStatus = await Appointment.editStatus(result);

@@ -15,18 +15,6 @@ const {
 } = require('./handler');
 const router = require('express').Router();
 
-// Appointment
-
-router.post('/', addAppointment);
-
-router.get('/:id', getAppointment);
-
-router.get('/', getAllAppointments);
-
-router.put('/:id', updateAppointment);
-
-router.delete('/:id', destroyAppointment);
-
 // AppointmentReservation
 
 router.post('/reservation/', addAppointmentReservation);
@@ -41,11 +29,23 @@ router.delete('/reservation/:id', destroyAppointmentReservation);
 
 // somewhere between :)
 
+router.post('/reservations/search', searchReservation);
+
 router.get('/reservation/:appointment_id', getAllReservationForOneAppointment);
 
-router.post('/reservation/search', searchReservation);
-
 router.get('/future-reservation/:doctor_id', getAllFutireReservation);
+
+// Appointment
+
+router.post('/', addAppointment);
+
+router.get('/:id', getAppointment);
+
+router.get('/', getAllAppointments);
+
+router.put('/:id', updateAppointment);
+
+router.delete('/:id', destroyAppointment);
 
 
 module.exports = router;

@@ -39,7 +39,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             defaultValue: "unpaid",
             allowNull: false,
-        }
+        },
+        // finished: {
+        //     type: DataTypes.BOOLEAN,
+        //     defaultValue: false,
+        //     allowNull: false,
+        // }
     }, {
         sequelize,
         modelName: 'AppointmentModel',

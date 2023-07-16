@@ -65,6 +65,17 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'doctor_id',
                 as: 'doctor_material_orders',
             });
+            this.hasMany(models.DoctorCancelReservationModel, {
+                foreignKey: {
+                    name: 'employee_id',
+                    allowNull: true,
+                },
+                as: 'doctor_cancel_reservations',
+            });
+            // this.belongsTo(models.DoctorCancelReservationModel, {
+            //     foreignKey: 'doctor_id',
+            //     as: 'doctor_cancel_reservations',
+            // });
         }
     }
     UserModel.init({
