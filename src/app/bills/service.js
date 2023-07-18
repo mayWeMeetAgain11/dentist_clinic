@@ -105,6 +105,13 @@ class Bill {
             });
             // console.log(appointment);
             const patient = await PatientModel.findByPk(id);
+            console.log(patient);
+            if (patient == null) {
+                return {
+                    data: "this patient is not exist",
+                    code: httpStatus.BAD_REQUEST,
+                };
+            }
 
             // const appointmentReservation1 = await AppointmentReservationModel.findAll({
             //     where: {

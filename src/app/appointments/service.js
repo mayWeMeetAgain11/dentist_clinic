@@ -397,10 +397,12 @@ class AppointmentReservation {
 						model: ChairModel,
 						as: 'chair'
 					},{
+						required: true,
 						model: AppointmentModel,
 						as: 'appointment',
 						include: [
 							{
+								required: true,
 								model: UserModel,
 								as: "doctor",
 								where: {

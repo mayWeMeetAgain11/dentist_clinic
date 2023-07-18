@@ -238,12 +238,15 @@ module.exports = {
         // data.doctor_id = doctor_id;
 
         try{
-            // const appointmentReservation = await AppointmentReservation.get(data.appointment_reservation_id);
+            const appointmentReservation = await AppointmentReservation.get(data.appointment_reservation_id);
             // console.log(appointmentReservation);
-            // data.cost = appointmentReservation.data.dataValues.cost;
-            // data.start = appointmentReservation.data.dataValues.start;
-            // data.end = appointmentReservation.data.dataValues.end;
-            // data.end = appointmentReservation.data.dataValues.end;
+            data.cost = appointmentReservation.data.dataValues.cost;
+            data.start = appointmentReservation.data.dataValues.start;
+            data.end = appointmentReservation.data.dataValues.end;
+            data.done = appointmentReservation.data.dataValues.done;
+            data.comment = appointmentReservation.data.dataValues.comment;
+            data.appointment_id = appointmentReservation.data.dataValues.appointment_id;
+            data.chair_id = appointmentReservation.data.dataValues.chair_id;
             // console.log(appointmentReservation.data.dataValues);
             // appointmentReservation.data.dataValues.setDataValues("appointment_reservation_id", data.appointment_reservation_id);
             // console.log(appointmentReservation.data.dataValues);

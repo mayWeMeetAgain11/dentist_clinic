@@ -571,7 +571,7 @@ class DoctorCancelReservation {
 
             const doctorCancelReservation = await DoctorCancelReservationModel.findOne({
 				where: {
-					id: id
+					id: data.cancel_reservation_id
 				},
 			});
 
