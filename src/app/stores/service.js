@@ -339,15 +339,15 @@ class StoreBill {
 
         try {
 
-            const storeBills = await StoreBillModel.findAll({
-                include: [
-                    {
-                        required: false,
-                        model: StoreBillMaterialModel,
-                        as: 'billMaterials',
-                    }
-                ],
-            });
+            // const storeBills = await StoreBillModel.findAll({
+            //     include: [
+            //         {
+            //             required: false,
+            //             model: StoreBillMaterialModel,
+            //             as: 'billMaterials',
+            //         }
+            //     ],
+            // });
 
             // const newStoreBills = [];
             // for (let i = 0; i < storeBills.length; i++) {
@@ -364,21 +364,41 @@ class StoreBill {
             //         newStoreBills.push(updatedBill);
             //     }
             // }
-            const newStoreBills = await StoreBillModel.findAll({
-                attributes: ['*', result.fn()],
-                where: {
-                    count: {
-                        [Op.gt]: 0
-                    }
-                },
+            const storeBills = await StoreBillModel.findAll({
+                attributes: [
+                    'id',
+                    'total',
+                    'created_at',
+                    [result.fn('COUNT', result.col('billMaterials.id')), 'count']
+                ],
+                // where: {
+                //     count: {
+                //         [Op.gt]: 0
+                //     }
+                // },
                 include: [
                     {
                         model: StoreBillMaterialModel,
                         as: 'billMaterials',
                         required: false
                     }
-                ]
+                ],
+                group: ['id']
             });
+
+            // console.log(storeBills[0].id);
+
+            let newStoreBills = [];
+            let newStoreBill = {};
+            
+            for (let i = 0; i < storeBills.length; i++) {
+                if (storeBills[i].getDataValue('count') === 0) {
+                    newStoreBill.id = storeBills[i].id;
+                    newStoreBill.total = storeBills[i].total;
+                    newStoreBill.created_at = storeBills[i].created_at;
+                    newStoreBills.push(newStoreBill);
+                }
+            }
 
             return {
                 data: newStoreBills,

@@ -1,6 +1,7 @@
-const { UserModel, DoctorDocumentModel, DoctorAccommodationModel, AbsenceOrderModel, DoctorMaterialOrderModel, DoctorCancelReservationModel } = require('../../app');
+const { UserModel, DoctorDocumentModel, DoctorAccommodationModel, AbsenceOrderModel, DoctorMaterialOrderModel, DoctorCancelReservationModel, AppointmentReservationModel, AppointmentModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require('sequelize');
+const { AppointmentReservation } = require('../appointments/service');
 
 
 
@@ -102,6 +103,49 @@ class User {
                         }
                     }
                 });
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
+    static async getWorkHours(start, end) {
+        try {
+            let result = await UserModel.findAll({
+                where: {
+                    type: {
+                        [Op.eq]: "Doctor",
+                    }
+                },
+                include: [
+                    {
+                        model: AppointmentModel,
+                        as: 'doctor_appointments',
+                        include: [
+                            {
+                                model: AppointmentReservationModel,
+                                as: 'appointment_reservations',
+                                where: {
+                                    start: {
+                                        [Op.and]: {
+                                            [Op.gte]: start,
+                                            [Op.lte]: end
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            });
             return {
                 data: result,
                 code: httpStatus.OK,
@@ -472,14 +516,34 @@ class AbsenceOrder {
             let resultMessage = "";
             const result = await AbsenceOrderModel.findOne({
                 where: {
-                    user_id: data.user_id
+                    user_id: data.user_id,
+                    accepted: null
                 }
             });
             // console.log(result);
             result.accepted = data.accepted;
             result.save();
+            data.start_date = result.start_date;
+            data.end_date = result.end_date;
             if (result.accepted === true) {
                 resultMessage = "absence order accepted successfully";
+                // if (result.type == "Doctor") {
+                    const reservations = await AppointmentReservation.getDoctorReservations(data.user_id, data.start_date, data.end_date);
+                    // console.log(reservations.data.length);
+                    for (let i = 0; i < reservations.data.length; i++) {
+                        data.start = reservations.data[i].dataValues.start;
+                        data.end = reservations.data[i].dataValues.end;
+                        data.cost = reservations.data[i].dataValues.cost;
+                        data.done = reservations.data[i].dataValues.done;
+                        data.comment = reservations.data[i].dataValues.comment;
+                        data.appointment_id = reservations.data[i].dataValues.appointment_id;
+                        data.appointment_reservation_id = reservations.data[i].dataValues.id;
+                        data.chair_id = reservations.data[i].dataValues.chair_id;
+                        data.employee_id = data.manager_id;
+                        console.log("just ended");
+                        const doctorCancelResevation = await new DoctorCancelReservation(data).add();
+                    }
+                // }
             } else {
                 resultMessage = "absence order rejected successfully";
             }

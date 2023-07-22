@@ -435,6 +435,57 @@ class AppointmentReservation {
 			};
 		}
 	}
+
+	static async getDoctorReservations(doctor_id, start_date, end_date) {
+		try {
+			const start = new Date(start_date);
+			const end = new Date(end_date);
+			// console.log(start_date);
+			// console.log(end);
+			const futureReservation = await AppointmentReservationModel.findAll({
+				where: {
+					start: {
+						[Op.and]: [
+							{[Op.gte]: start},
+							{[Op.lt]: end}
+						]
+					}
+				},
+				include: [
+					{
+						model: ChairModel,
+						as: 'chair'
+					},{
+						required: true,
+						model: AppointmentModel,
+						as: 'appointment',
+						include: [
+							{
+								required: true,
+								model: UserModel,
+								as: "doctor",
+								where: {
+									id: doctor_id
+								}
+							},
+						]
+					}
+				],
+				sort: [["start"]],
+			});
+			console.log("futureReservation" + futureReservation);
+            return {
+                data: futureReservation,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
 }
 
 

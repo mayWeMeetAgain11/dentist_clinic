@@ -72,9 +72,13 @@ module.exports = {
     },
 
     updateDocument: async (req, res) => {
-        const id = req.params.id;
+        // id for patient
+        const {id} = req.params;
         const data = req.body;
-        const result = await new PatientDocument(data).updateDocument(id);
+        data.id = id;
+        // const patient = await Patient.getPatint(id);
+        // const result = await new PatientDocument(data).updateDocument(id);
+        const result = await Patient.updateDocument(data);
         res.status(result.code).send({
             data: result.data,
         });

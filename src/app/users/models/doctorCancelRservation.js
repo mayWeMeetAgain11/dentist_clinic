@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
             this.belongsTo(models.AppointmentReservationModel, {
                 foreignKey: {
                     name: 'appointment_reservation_id',
+                    onDelete: 'RESTRICT'
                 },
                 as: 'appointmentreservation',
             });

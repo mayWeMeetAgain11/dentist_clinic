@@ -105,6 +105,21 @@ module.exports = (sequelize, DataTypes) => {
                 },
             },
         },
+        document: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            defaultValue: "",
+            // validate: {
+            //     notEmpty: {
+            //         args: true,
+            //         msg: "Address cannot be empty",
+            //     },
+            //     len: {
+            //         args: [2, 50],
+            //         msg: "Address must be between 2 and 50 characters long",
+            //     },
+            // },
+        },
 
     }, {
         sequelize,

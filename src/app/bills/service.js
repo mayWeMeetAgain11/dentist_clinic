@@ -3,6 +3,7 @@ const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require("sequelize");
 const { Sequelize } = require('sequelize');
 const { StoreBill } = require('../stores/service');
+const { log } = require('../../../utils/logger/console');
 
 
 class Bill {
@@ -104,7 +105,14 @@ class Bill {
                 ]
             });
             // console.log(appointment);
-            const patient = await PatientModel.findByPk(id);
+            const patient = await PatientModel.findOne({
+                attributes: {
+                    exclude: ['document']
+                },
+                where: {
+                    id: id
+                }
+            });
             console.log(patient);
             if (patient == null) {
                 return {
@@ -183,6 +191,9 @@ class Bill {
         try {
 
             const patients = await PatientModel.findAll({
+                attributes: {
+                    exclude: ['document']
+                },
                 include: [
                     {
                         required: true,
@@ -233,6 +244,37 @@ class Bill {
 
     }
 
+    static async getAllPatientsBillsForPdf() {
+
+        try {
+
+            const patients = await PatientModel.findAll();
+            for (let i = 0; i < patients.length; i++) {
+                console.log(patients[i].id);
+                const bill = await Bill.getPatientBill(patients[i].id);
+                console.log("finish bill");
+                console.log("appointment" + bill.data.appointment_details);
+                // patients[i].appointment_details = bill.data.appointment_details;
+                patients[i].setDataValue("appointment_details", bill.data.appointment_details);
+                patients[i].total = bill.data.total;
+                patients[i].paid = bill.data.paid;
+                patients[i].rest = bill.data.rest;
+            }
+
+            return {
+                data: patients,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+
+    }
+
 }
 
 class Payer {
@@ -248,14 +290,17 @@ class Payer {
 
         try {
 
-            const result = await PayerModel.findOne({
+            let result = await PayerModel.findOne({
                 where: {
                     phone: data.phone
                 }
             });
+
             if (!result) {
+                console.log("in condition");
                 result = await PayerModel.create(this);
             }
+            
             return {
                 data: result,
                 code: httpStatus.CREATED,
@@ -304,8 +349,8 @@ class Tax {
                 limit: 1
             });
 
-            console.log("result");
-            console.log(result);
+            // console.log("result");
+            // console.log(result);
 
             return {
                 data: result,

@@ -11,6 +11,14 @@ module.exports = {
             data: result.data,
         });
     },
+
+    getAllForPdf: async (req, res) => {
+        // const id = req.params.id;
+        const result = await Bill.getAllPatientsBillsForPdf();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
     
     getAllPatientBills: async (req, res) => {
         const result = await Bill.getAllPatientsBills();
@@ -25,6 +33,8 @@ module.exports = {
         const data = req.body;
         // data.employee_id = employee_id;
         const payer = await new Payer(data).add(data);
+        console.log("payer");
+        console.log(payer.data);
         data.payer_id = payer.data.dataValues.id;
         const currentTaxVar = await Tax.currentTax();
         // console.log(currentTaxVar);

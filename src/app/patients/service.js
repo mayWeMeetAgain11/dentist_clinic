@@ -178,6 +178,40 @@ class Patient {
         }
     }
 
+    static async updateDocument(data) {
+        try {
+            // console.log("كيفك حبيب");
+            const patient = await PatientModel.findByPk(data.id);
+            patient.document = data.document;
+            console.log(patient.document);
+            patient.save();
+            // const result = await PatientDocumentModel.update(
+            //     this,
+            //     {
+            //         where: {
+            //             id: id,
+            //         },
+            //     }
+            // );
+            // if (patient.data.dataValues.document = data.document) {
+            return {
+                data: 'updated',
+                code: httpStatus.UPDATED,
+            };
+            // } else {
+            //     return {
+            //         data: 'something wrong happene',
+            //         code: httpStatus.BAD_REQUEST,
+            //     };
+            // }
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
 
 }
 
@@ -240,36 +274,6 @@ class PatientDocument {
             };
         }
 
-    }
-
-
-    async updateDocument(id) {
-        try {
-            const result = await PatientDocumentModel.update(
-                this,
-                {
-                    where: {
-                        id: id,
-                    },
-                }
-            );
-            if (result[0] == 1) {
-                return {
-                    data: 'updated',
-                    code: httpStatus.UPDATED,
-                };
-            } else {
-                return {
-                    data: 'something wrong happene',
-                    code: httpStatus.BAD_REQUEST,
-                };
-            }
-        } catch (error) {
-            return {
-                data: error.message,
-                code: httpStatus.BAD_REQUEST,
-            };
-        }
     }
 
     static async deleteDocument(id) {

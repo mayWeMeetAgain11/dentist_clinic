@@ -83,6 +83,13 @@ module.exports = {
             data: result.data,
         });
     },
+    getAllDoctorsWorkHours: async (req, res) => {
+        const {start, end} = req.body;
+        const result = await User.getWorkHours(start, end);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
     
     update: async (req, res) => {
         const id = req.params.id;
@@ -189,8 +196,10 @@ module.exports = {
 
     absenceOrderReply: async (req, res) => {
         const data = req.body;
-        const {user_id} = req.params;
-        data.user_id = user_id;
+        // const {user_id} = req.params; // should be in the body
+        const {manager_id} = req.params;
+        data.manager_id = manager_id;
+        // data.user_id = user_id;
         const result = await AbsenceOrder.absenceOrderReplyService(data);
         res.status(result.code).send({
             data: result.data,

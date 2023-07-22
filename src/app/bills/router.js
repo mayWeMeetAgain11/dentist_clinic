@@ -1,9 +1,10 @@
 const router = require('express').Router();
-const { get, addBill, addPayer, addTax, getAllPatientBills, getAllBillsWithMaterials } = require('./handler');
+const { get, addBill, addPayer, addTax, getAllPatientBills, getAllBillsWithMaterials, getAllForPdf } = require('./handler');
 
 // bill
 router.get('/get/:id', get);
 router.get('/getAll', getAllPatientBills);
+router.get('/getAllForPdf', getAllForPdf);
 
 router.post('/add', addBill);
 

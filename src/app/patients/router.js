@@ -12,7 +12,7 @@ router.get('/getall/:doctor_id', getAllForOneDoctor);
 
 router.post('/document/add', upload.single('document'), addDocument);
 router.get('/document/get/:id', getDocuments);
-router.put('/document/update/:id', updateDocument);
+router.post('/document/update/:id', updateDocument);
 router.delete('/document/delete/:id', deleteDocument);
 
 // router.post('/document/add', upload.single('document'), addDocument);
