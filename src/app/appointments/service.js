@@ -436,6 +436,36 @@ class AppointmentReservation {
 		}
 	}
 
+	static async checkEnded(cost, done, appointment_reservation_id) {
+		try {
+			const now = new Date();
+			let appointmentReservation = await AppointmentReservationModel.findByPk(appointment_reservation_id);
+
+			if (cost) {
+				appointmentReservation.cost = cost;
+			}
+
+			if (done) {
+				appointmentReservation.done = done;
+			} else {
+				appointmentReservation.done = now;
+			}
+
+			appointmentReservation.save();
+
+            return {
+                data: "updated",
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
+
 	static async getDoctorReservations(doctor_id, start_date, end_date) {
 		try {
 			const start = new Date(start_date);

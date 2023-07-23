@@ -37,7 +37,8 @@ module.exports = (sequelize, DataTypes) => {
     AppointmentReservationModel.init({
         cost: {
             type: DataTypes.INTEGER,
-            allowNull: true,
+            allowNull: false,
+            defaultValue: 0,
             validate: {
                 isInt: true,
                 min: 0,

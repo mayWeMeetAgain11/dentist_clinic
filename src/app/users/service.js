@@ -135,10 +135,10 @@ class User {
                                 as: 'appointment_reservations',
                                 where: {
                                     start: {
-                                        [Op.and]: {
-                                            [Op.gte]: start,
-                                            [Op.lte]: end
-                                        }
+                                        [Op.and]: [
+                                            {[Op.gte]: start},
+                                            {[Op.lte]: end}
+                                        ]
                                     }
                                 }
                             }

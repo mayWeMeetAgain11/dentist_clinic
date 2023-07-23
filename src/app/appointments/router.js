@@ -11,7 +11,8 @@ const {
     destroyAppointmentReservation,
     getAllReservationForOneAppointment,
     searchReservation,
-    getAllFutireReservation
+    getAllFutireReservation,
+    determineCostAndDone
 } = require('./handler');
 const router = require('express').Router();
 
@@ -30,6 +31,8 @@ router.delete('/reservation/:id', destroyAppointmentReservation);
 // somewhere between :)
 
 router.post('/reservations/search', searchReservation);
+
+router.post('/reservation/determine-cost', determineCostAndDone);
 
 router.get('/reservation/:appointment_id', getAllReservationForOneAppointment);
 

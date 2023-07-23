@@ -113,6 +113,18 @@ console.log("hellllo");
         });
     },
 
+    determineCostAndDone: async (req, res) => {
+        const {
+            done, 
+            appointment_reservation_id, 
+            cost,
+        } = req.body;
+        const result = await AppointmentReservation.checkEnded(cost, done, appointment_reservation_id);
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
     getAllFutireReservation: async (req, res) => {
         const {doctor_id} = req.params;
         const result = await AppointmentReservation.getFutureReservation(doctor_id);
