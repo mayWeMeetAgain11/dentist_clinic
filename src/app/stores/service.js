@@ -397,6 +397,7 @@ class StoreBill {
                     newStoreBill.total = storeBills[i].total;
                     newStoreBill.created_at = storeBills[i].created_at;
                     newStoreBills.push(newStoreBill);
+                    newStoreBill = {};
                 }
             }
 
