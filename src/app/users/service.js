@@ -1,4 +1,4 @@
-const { UserModel, DoctorDocumentModel, DoctorAccommodationModel, AbsenceOrderModel, DoctorMaterialOrderModel, DoctorCancelReservationModel, AppointmentReservationModel, AppointmentModel } = require('../../app');
+const { UserModel, DoctorDocumentModel, DoctorAccommodationModel, AbsenceOrderModel, DoctorMaterialOrderModel, DoctorCancelReservationModel, AppointmentReservationModel, AppointmentModel, SalaryModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require('sequelize');
 const { AppointmentReservation } = require('../appointments/service');
@@ -119,6 +119,12 @@ class User {
 
     static async getWorkHours(start, end) {
         try {
+            let doctorsWithWorkHours = [];
+            let oneDoctorWorkHours = 0;
+            let doctor = {};
+            // let workHours = {};
+            let number_of_sessions = 0;
+
             let result = await UserModel.findAll({
                 where: {
                     type: {
@@ -139,6 +145,9 @@ class User {
                                             {[Op.gte]: start},
                                             {[Op.lte]: end}
                                         ]
+                                    },
+                                    done: {
+                                        [Op.ne]: null
                                     }
                                 }
                             }
@@ -146,8 +155,28 @@ class User {
                     }
                 ]
             });
+
+            for(let i = 0; i < result.length; i++) {
+                for(let j = 0; j < result[i].doctor_appointments.length; j++) {
+                    for(let k = 0; k < result[i].doctor_appointments[j].appointment_reservations.length; k++) {
+                        oneDoctorWorkHours += result[i].doctor_appointments[j].appointment_reservations[k].done - result[i].doctor_appointments[j].appointment_reservations[k].start;
+                        number_of_sessions += 1
+                    }
+                }
+
+                doctor.doctor_info = result[i];
+                doctor.workHours = {}
+                doctor.workHours.minutes = oneDoctorWorkHours / 60000;
+                doctor.workHours.hours = oneDoctorWorkHours / 3600000 - doctor.workHours.minutes / 60;
+                doctor.number_of_sessions = number_of_sessions;
+                doctorsWithWorkHours.push(doctor);
+                doctor = {};
+                oneDoctorWorkHours = 0;
+                number_of_sessions = 0;
+            }
+
             return {
-                data: result,
+                data: doctorsWithWorkHours,
                 code: httpStatus.OK,
             };
 
@@ -682,5 +711,59 @@ class DoctorCancelReservation {
 
 }
 
+class Salary {
 
-module.exports = { User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder, DoctorCancelReservation };  
+	constructor(data) {
+		this.amount = data.amount;
+		this.date = data.date;
+		this.employee_id = data.employee_id;
+		
+	}
+
+    async add() {
+
+        try {
+
+            const result = await SalaryModel.create(this);
+            // console.log(result);
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+    static async getAllForOneMonth(data) {
+
+        try {
+
+            const result = await SalaryModel.findAll({
+                where: {
+                    date: data.date
+                },
+                include: {
+                    model: UserModel,
+                    as: "employee"
+                }
+            });
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+}
+
+
+module.exports = { User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder, DoctorCancelReservation, Salary };  

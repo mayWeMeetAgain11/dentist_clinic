@@ -22,8 +22,8 @@ app.get('/dentist',(req,res)=>{
 })
 
 app.listen({ port: 3010 }, async () => {
-    // await database.sync({force: false});
-    await database.authenticate();
+    await database.sync({force: false});
+    // await database.authenticate();
     console.log('starting');
 });
 

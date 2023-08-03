@@ -1,4 +1,4 @@
-const  {Bill, Payer, Tax}  = require('./service');
+const  {Bill, Payer, Tax, PayedTax}  = require('./service');
 const  {Appointment}  = require('../appointments/service');
 
 
@@ -57,6 +57,29 @@ module.exports = {
     addTax: async (req, res) => {
         const data = req.body;
         const result = await new Tax(data).add();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    getAllPayedTax: async (req, res) => {
+        const result = await PayedTax.getAll();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    addPayedTax: async (req, res) => {
+        const data = req.body;
+        const result = await new PayedTax(data).add();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    getAllTaxOnbills: async (req, res) => {
+        const data = req.body;
+        const result = await Bill.getTotalForOneYear(data);
         res.status(result.code).send({
             data: result.data,
         });

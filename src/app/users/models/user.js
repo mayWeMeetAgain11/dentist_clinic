@@ -72,6 +72,10 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 as: 'doctor_cancel_reservations',
             });
+            this.hasMany(models.SalaryModel, {
+                foreignKey: 'employee_id',
+                as: 'employee',
+            });
             // this.belongsTo(models.DoctorCancelReservationModel, {
             //     foreignKey: 'doctor_id',
             //     as: 'doctor_cancel_reservations',

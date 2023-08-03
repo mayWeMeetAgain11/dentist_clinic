@@ -1,9 +1,10 @@
-const { BillModel,AppointmentModel,AppointmentReservationModel, PatientModel, PayerModel, TaxModel, UserModel } = require('../../app');
+const { BillModel,AppointmentModel,AppointmentReservationModel, PatientModel, PayerModel, TaxModel, UserModel, PayedTaxModel } = require('../../app');
 const httpStatus = require('../../../utils/constants/httpStatus');
 const { Op } = require("sequelize");
 const { Sequelize } = require('sequelize');
 const { StoreBill } = require('../stores/service');
 const { log } = require('../../../utils/logger/console');
+const {sequelize} = require('../../../utils/database/config');
 
 
 class Bill {
@@ -275,6 +276,51 @@ class Bill {
 
     }
 
+    static async getTotalForOneYear(data) {
+
+        try {
+
+            const enteredYear = data.year;
+
+            const startDate = new Date(enteredYear, 0, 1);
+            const endDate = new Date(enteredYear, 11, 31);
+
+            const getAllBillForOneYear = await BillModel.findOne({
+                attributes: [
+                    [sequelize.literal('SUM(paid)'), 'total_paid'],
+                    [sequelize.fn('COUNT', sequelize.col('id')), 'num_of_bills']
+                ],
+                where: {
+                    created_at: {
+                        [Op.between]: [startDate, endDate] 
+                    }
+                }
+            });
+
+            const currentTax = await Tax.currentTax();
+
+            const totalTax = getAllBillForOneYear.getDataValue("total_paid") * currentTax.data.getDataValue("percent");
+
+            const result = {
+                bills_total_paid: getAllBillForOneYear.getDataValue("total_paid"),
+                num_of_bills: getAllBillForOneYear.getDataValue("num_of_bills"),
+                totalTax: totalTax,
+            };
+
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.ALREADY_REGISTERED,
+            };
+        }
+
+    }
+
 }
 
 class Payer {
@@ -366,4 +412,49 @@ class Tax {
     }
 }
 
-module.exports = {Bill, Payer, Tax};
+class PayedTax {
+
+    constructor (data) {
+        this.total = data.total;
+        this.year = data.year;
+    }
+
+    async add () {
+
+        try {
+
+            const result = await PayedTaxModel.create(this);
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+    static async getAll () {
+
+        try {
+
+            const result = await PayedTaxModel.findAll();
+            return {
+                data: result,
+                code: httpStatus.CREATED,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+    }
+
+}
+
+module.exports = {Bill, Payer, Tax, PayedTax};

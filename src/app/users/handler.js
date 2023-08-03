@@ -1,6 +1,6 @@
 const multer = require('multer');
 const doctordocument = require('./models/doctordocument');
-const {User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder, DoctorCancelReservation} = require('./service');
+const {User, DoctorDocument, DoctorDocumentAccommodation, AbsenceOrder, DoctorMaterialOrder, DoctorCancelReservation, Salary} = require('./service');
 const {Store} = require('../stores/service');
 const {sequelize} = require('../../../utils/database/config');
 const httpStatus = require('../../../utils/constants/httpStatus');
@@ -298,6 +298,22 @@ module.exports = {
             };
         }
 
+    },
+
+    giveSalary: async (req, res) => {
+        const data = req.body;
+        const result = await new Salary(data).add();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    getAllSalariesForOneMonth: async (req, res) => {
+        const data = req.body;
+        const result = await Salary.getAllForOneMonth(data);
+        res.status(result.code).send({
+            data: result.data,
+        });
     },
 
 }

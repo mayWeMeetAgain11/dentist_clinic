@@ -1,7 +1,7 @@
 const { destroy, add, getOne, getAll, update , loginHandler,  
     getAllDocument, addDocument,getAllDocumentAccommodation , addDocumentAccommodation, 
     getAllAbsenceOrders, addAbsenceOrder, addDoctorOrder, getAllManagers, absenceOrderReply, checkAllDocumentAccommodation,
-    addCancelReservation, deleteAppointmentReservation, getAllDoctors, getAllDoctorsWorkHours
+    addCancelReservation, deleteAppointmentReservation, getAllDoctors, getAllDoctorsWorkHours, giveSalary, getAllSalariesForOneMonth
 } = require('./handler');
 const router = require('express').Router();
 const upload = require('../../../utils/fileFunctions/file_pdf').upload;
@@ -37,6 +37,10 @@ router.post('/order/add/:doctor_id', addDoctorOrder);
 // doctor cancel reservationn
 router.post('/cancel-reservation', addCancelReservation);
 router.post('/cancel-reservation/delete-reservation/:employee_id', deleteAppointmentReservation);
+
+// salary
+router.post('/salary/add', giveSalary);
+router.get('/salary/getAll', getAllSalariesForOneMonth);
 
 
 
