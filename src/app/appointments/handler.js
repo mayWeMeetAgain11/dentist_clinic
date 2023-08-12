@@ -21,6 +21,14 @@ module.exports = {
         });
     },
 
+    getAllAppointmentsWithPatient: async (req, res) => {
+
+        const result = await Appointment.getAllWithPatient();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
     getAppointment: async (req, res) => {
         const id = req.params.id;
         const result = await Appointment.get(id);

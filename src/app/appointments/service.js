@@ -129,6 +129,37 @@ class Appointment {
 			};
 		}
 	}
+
+    static async getAllWithPatient() {
+		try {
+			const result = await AppointmentModel.findAll({
+				include: [
+					{
+						model: PatientModel,
+						as: 'patient'
+					}, 
+					{
+						model: UserModel,
+						as: 'doctor'
+					}, 
+					{
+						model: UserModel,
+						as: 'employee'
+					}, 
+				]
+			});
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+		} catch (error) {
+			console.error(error.message);
+			return {
+				data: error.message,
+				code: httpStatus.BAD_REQUEST,
+			};
+		}
+	}
 	
     static async get(id) {
 		try {
@@ -268,7 +299,7 @@ class AppointmentReservation {
 
     static async getAppointmentReservations(id) {
 		try {
-			const result = await AppointmentReservationModel.findOne({
+			const result = await AppointmentReservationModel.findAll({
 				where: {
 					appointment_id: id
 				},
