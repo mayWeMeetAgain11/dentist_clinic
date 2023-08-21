@@ -499,7 +499,7 @@ class AbsenceOrder {
         this.user_id = data.user_id;
     }
 
-    static async getAllAbsenceOrder(id) {
+    static async getAllAbsenceOrderForOneUser(id) {
 
         try {
 
@@ -508,6 +508,25 @@ class AbsenceOrder {
                     user_id: id
                 }
             });
+            return {
+                data: result,
+                code: httpStatus.OK,
+            };
+
+        } catch (error) {
+            return {
+                data: error.message,
+                code: httpStatus.BAD_REQUEST,
+            };
+        }
+
+    }
+
+    static async getAllAbsenceOrder() {
+
+        try {
+
+            const result = await AbsenceOrderModel.findAll({});
             return {
                 data: result,
                 code: httpStatus.OK,

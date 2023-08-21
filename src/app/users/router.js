@@ -1,6 +1,6 @@
 const { destroy, add, getOne, getAll, update , loginHandler,  
     getAllDocument, addDocument,getAllDocumentAccommodation , addDocumentAccommodation, 
-    getAllAbsenceOrders, addAbsenceOrder, addDoctorOrder, getAllManagers, absenceOrderReply, checkAllDocumentAccommodation,
+    getAllAbsenceOrders, getAllAbsenceOrdersForOneUser, addAbsenceOrder, addDoctorOrder, getAllManagers, absenceOrderReply, checkAllDocumentAccommodation,
     addCancelReservation, deleteAppointmentReservation, getAllDoctors, getAllDoctorsWorkHours, giveSalary, getAllSalariesForOneMonth
 } = require('./handler');
 const router = require('express').Router();
@@ -28,7 +28,8 @@ router.post('/createDocumentAccommodation', upload.single('document'), addDocume
 
 // absence order
 router.put('/AbsenceOrder/reply/:manager_id', absenceOrderReply);
-router.get('/absenceOrder/:id', getAllAbsenceOrders);
+router.get('/absenceOrder', getAllAbsenceOrders);
+router.get('/absenceOrder/:id', getAllAbsenceOrdersForOneUser);
 router.post('/createAbsenceOrder', addAbsenceOrder);
 
 // doctor material order

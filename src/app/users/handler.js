@@ -177,9 +177,16 @@ module.exports = {
    // Absence order
 
     getAllAbsenceOrders: async (req, res) => {
+        const result = await AbsenceOrder.getAllAbsenceOrder();
+        res.status(result.code).send({
+            data: result.data,
+        });
+    },
+
+    getAllAbsenceOrdersForOneUser: async (req, res) => {
         const {id} = req.params;
 
-        const result = await AbsenceOrder.getAllAbsenceOrder(id);
+        const result = await AbsenceOrder.getAllAbsenceOrderForOneUser(id);
         res.status(result.code).send({
             data: result.data,
         });
